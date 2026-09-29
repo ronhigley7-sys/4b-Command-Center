@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>4B Command Center</title>
+  <style>
+    :root {
+      --navy: #0b2545;
+      --navy-2: #123862;
+      --gold: #c9a227;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #667085;
+      --border: #d8dee8;
+      --green: #157347;
+      --red: #b42318;
+      --amber: #b54708;
+      --blue: #1d4ed8;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); }
+    header { background: linear-gradient(90deg, var(--navy), var(--navy-2)); color: #fff; padding: 14px 16px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    .brand h1 { margin: 0; font-size: 22px; letter-spacing: .2px; }
+    .brand p { margin: 3px 0 0; color: #d7e3f5; font-size: 13px; }
+    .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    button, input, select, textarea { font: inherit; }
+    button { border: 0; background: var(--navy); color: #fff; padding: 8px 11px; border-radius: 6px; cursor: pointer; font-weight: 700; }
+    button.secondary { background: #eef2f7; color: var(--navy); border: 1px solid var(--border); }
+    button.danger { background: var(--red); }
+    button.small { padding: 5px 8px; font-size: 12px; }
+    nav { display: flex; gap: 6px; padding: 10px 12px 0; overflow-x: auto; }
+    .tab { background: #e8edf5; color: var(--navy); border: 1px solid var(--border); border-bottom: 0; border-radius: 7px 7px 0 0; padding: 9px 13px; min-width: max-content; }
+    .tab.active { background: var(--card); color: var(--navy); box-shadow: 0 -2px 0 var(--gold) inset; }
+    main { padding: 12px; }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; box-shadow: 0 1px 2px rgba(16,24,40,.05); }
+    .grid { display: grid; gap: 12px; }
+    .two { grid-template-columns: minmax(280px, 390px) minmax(0, 1fr); }
+    h2 { margin: 0 0 10px; color: var(--navy); font-size: 18px; }
+    h3 { margin: 16px 0 8px; color: var(--navy); font-size: 15px; }
+    label { display: block; font-size: 12px; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
+    input, select, textarea { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 8px; background: #fff; color: var(--text); }
+    textarea { min-height: 72px; resize: vertical; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .full { grid-column: 1 / -1; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+    .toolbar { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+    .muted { color: var(--muted); font-size: 12px; }
+    .metric-row { display: grid; grid-template-columns: repeat(4, minmax(100px, 1fr)); gap: 8px; margin-bottom: 12px; }
+    .metric { background: #f8fafc; border: 1px solid var(--border); border-radius: 7px; padding: 10px; }
+    .metric strong { display: block; color: var(--navy); font-size: 22px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border-bottom: 1px solid var(--border); text-align: left; padding: 8px; vertical-align: top; }
+    th { color: var(--navy); background: #f8fafc; font-size: 12px; }
+    .badge { display: inline-block; padding: 2px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #eef2ff; color: var(--blue); }
+    .badge.charge { background: #fff4cf; color: #7a5200; }
+    .badge.orient { background: #ecfdf3; color: var(--green); }
+    .badge.preceptor { background: #fef3f2; color: var(--red); }
+    .hidden { display: none; }
+    .message { display: none; margin-bottom: 10px; border-radius: 7px; padding: 9px 11px; background: #ecfdf3; color: var(--green); border: 1px solid #abefc6; }
+    .message.show { display: block; }
+    .shift-card { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+    .shift-head { display: flex; justify-content: space-between; gap: 10px; background: #f8fafc; padding: 8px 10px; color: var(--navy); font-weight: 800; }
+    .staff-line { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; padding: 8px 10px; border-top: 1px solid var(--border); }
+    .staff-line span { overflow-wrap: anywhere; }
+    @media (max-width: 820px) {
+      header { align-items: flex-start; }
+      .top-actions { width: 100%; }
+      .top-actions button { flex: 1 1 auto; }
+      .two { grid-template-columns: 1fr; }
+      .metric-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .form-grid { grid-template-columns: 1fr; }
+      main { padding: 10px; }
+    }
+    @media print {
+      header, nav, .top-actions, .no-print, button { display: none !important; }
+      body { background: #fff; }
+      main { padding: 0; }
+      .panel { box-shadow: none; border: 0; padding: 0; }
+      .hidden { display: none !important; }
+      .tab-page:not(.active-print) { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>4B Command Center</h1>
+    <p>Board, charge assignments, staff directory, and tools</p>
+  </div>
+  <div class="top-actions no-print">
+    <button class="secondary" onclick="window.print()">Print</button>
+    <button class="secondary" onclick="exportStaffingCsv()">Export CSV</button>
+    <button onclick="saveNow()">Save</button>
+  </div>
+</header>
+<nav class="no-print" aria-label="Main pages">
+  <button class="tab active" data-tab="board" onclick="showTab('board')">Board</button>
+  <button class="tab" data-tab="charge" onclick="showTab('charge')">Charge</button>
+  <button class="tab" data-tab="directory" onclick="showTab('directory')">Directory</button>
+  <button class="tab" data-tab="tools" onclick="showTab('tools')">Tools</button>
+</nav>
+<main>
+  <div id="message" class="message"></div>
+
+  <section id="page-board" class="tab-page active-print">
+    <div class="grid two">
+      <div class="panel no-print">
+        <h2>Add To Board</h2>
+        <div class="form-grid">
+          <label>Date<input id="boardDate" type="date"></label>
+          <label>Name<input id="assignName" list="staffNames" placeholder="Last, First"></label>
+          <label>Role<select id="assignRole"><option>RN</option><option>LPN</option><option>CA</option><option>UC</option></select></label>
+          <label>Shift<select id="assignShift"></select></label>
+          <label>Assignment<select id="assignType"><option>Staff</option><option>Orient</option><option>Preceptor</option><option>Float</option><option>Sitter</option></select></label>
+          <label class="full">Notes<input id="assignNotes" placeholder="Optional"></label>
+        </div>
+        <div class="actions"><button onclick="addAssignment()">Add Staff</button><button class="secondary" onclick="clearBoardForDate()">Clear Date</button></div>
+      </div>
+      <div class="panel">
+        <div class="toolbar"><div><h2>4B Board</h2><div class="muted" id="boardSubtitle"></div></div><label class="no-print" style="max-width:190px">View Date<input id="viewDate" type="date" onchange="renderAll()"></label></div>
+        <div class="metric-row" id="boardMetrics"></div>
+        <div id="boardView"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-charge" class="tab-page hidden">
+    <div class="panel">
+      <div class="toolbar"><div><h2>Charge Assignments</h2><div class="muted">Assign one 4B charge nurse per shift.</div></div><label class="no-print" style="max-width:190px">Date<input id="chargeDate" type="date" onchange="renderCharge()"></label></div>
+      <div id="chargeView"></div>
+    </div>
+  </section>
+
+  <section id="page-directory" class="tab-page hidden">
+    <div class="grid two">
+      <div class="panel no-print">
+        <h2>Add Staff</h2>
+        <div class="form-grid">
+          <label>Name<input id="staffName" placeholder="Last, First"></label>
+          <label>Role<select id="staffRole"><option>RN</option><option>LPN</option><option>CA</option><option>UC</option><option>Other</option></select></label>
+          <label>Home Shift<select id="staffShift"><option>Day</option><option>Evening</option><option>Night</option><option>Variable</option></select></label>
+          <label>FTE<input id="staffFte" placeholder="1.0"></label>
+          <label>Phone<input id="staffPhone" placeholder="Optional"></label>
+          <label>Email<input id="staffEmail" placeholder="Optional"></label>
+          <label class="full">Notes<textarea id="staffNotes" placeholder="Skills, preceptor status, schedule notes"></textarea></label>
+        </div>
+        <div class="actions"><button onclick="addStaff()">Save Staff</button><button class="secondary" onclick="clearStaffForm()">New Blank</button></div>
+      </div>
+      <div class="panel">
+        <div class="toolbar"><h2>Staff Directory</h2><input class="no-print" id="directorySearch" style="max-width:260px" placeholder="Search staff" oninput="renderDirectory()"></div>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Shift</th><th>Contact</th><th>Notes</th><th class="no-print">Actions</th></tr></thead><tbody id="directoryRows"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-tools" class="tab-page hidden">
+    <div class="grid two">
+      <div class="panel">
+        <h2>Import Staffing</h2>
+        <p class="muted">Paste rows copied from Excel/UKG. Best format: Date, Name, Role, Shift. The parser also accepts tab-separated rows.</p>
+        <textarea id="pasteRows" placeholder="2026-09-29, Smith Jane, RN, 0700-1500"></textarea>
+        <div class="actions"><button onclick="importPastedRows()">Import Rows</button><button class="secondary" onclick="document.getElementById('pasteRows').value=''">Clear</button></div>
+      </div>
+      <div class="panel">
+        <h2>Backup</h2>
+        <p class="muted">Use backups before changing computers or clearing browser data.</p>
+        <div class="actions"><button onclick="downloadBackup()">Download Backup</button><button class="secondary" onclick="document.getElementById('backupFile').click()">Restore Backup</button><button class="danger" onclick="clearAllData()">Clear All</button></div>
+        <input id="backupFile" type="file" accept=".json,application/json" class="hidden" onchange="restoreBackup(event)">
+        <h3>Current Data</h3>
+        <div class="metric-row" id="toolMetrics"></div>
+      </div>
+    </div>
+  </section>
+
+  <datalist id="staffNames"></datalist>
+</main>
+<script>
+(function(){
+  'use strict';
+  var KEY = 'aomc-4b-command-center-v1';
+  var shifts = ['0700-1500','1500-1900','1900-0700','0630-1430','1430-1830','1830-2230','2230-0630','1500-2300','2300-0700'];
+  var state = load();
+
+  function today(){ return new Date().toISOString().slice(0,10); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>\"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]; }); }
+  function id(){ return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+  function load(){
+    try { return Object.assign({staff:[], assignments:[], charge:{}}, JSON.parse(localStorage.getItem(KEY) || '{}')); }
+    catch(e){ return {staff:[], assignments:[], charge:{}}; }
+  }
+  function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+  function msg(text){ var el=document.getElementById('message'); el.textContent=text; el.classList.add('show'); setTimeout(function(){el.classList.remove('show');}, 2600); }
+  function dateValue(){ return document.getElementById('viewDate').value || today(); }
+  function roleClass(type){ return type === 'Orient' ? 'orient' : type === 'Preceptor' ? 'preceptor' : type === 'Charge' ? 'charge' : ''; }
+  function normalizeName(name){ return String(name || '').replace(/\s+/g,' ').trim(); }
+  function upsertStaff(name, role){
+    name = normalizeName(name);
+    if(!name) return;
+    var existing = state.staff.find(function(s){ return s.name.toLowerCase() === name.toLowerCase(); });
+    if(existing){ if(role) existing.role = existing.role || role; return; }
+    state.staff.push({id:id(), name:name, role:role || 'RN', shift:'Variable', fte:'', phone:'', email:'', notes:''});
+  }
+
+  window.showTab = function(tab){
+    document.querySelectorAll('.tab').forEach(function(b){ b.classList.toggle('active', b.dataset.tab === tab); });
+    document.querySelectorAll('.tab-page').forEach(function(p){ p.classList.add('hidden'); p.classList.remove('active-print'); });
+    var page = document.getElementById('page-' + tab);
+    if(page){ page.classList.remove('hidden'); page.classList.add('active-print'); }
+    if(tab === 'charge') renderCharge();
+    if(tab === 'directory') renderDirectory();
+    if(tab === 'tools') renderTools();
+  };
+
+  window.saveNow = function(){ save(); msg('Saved locally.'); };
+
+  window.addAssignment = function(){
+    var date = document.getElementById('boardDate').value || dateValue();
+    var name = normalizeName(document.getElementById('assignName').value);
+    var role = document.getElementById('assignRole').value;
+    var shift = document.getElementById('assignShift').value;
+    var type = document.getElementById('assignType').value;
+    var notes = document.getElementById('assignNotes').value.trim();
+    if(!name){ alert('Enter a staff name.'); return; }
+    upsertStaff(name, role);
+    state.assignments.push({id:id(), date:date, name:name, role:role, shift:shift, type:type, notes:notes});
+    document.getElementById('assignName').value='';
+    document.getElementById('assignNotes').value='';
+    document.getElementById('viewDate').value = date;
+    document.getElementById('chargeDate').value = date;
+    save(); renderAll(); msg('Board assignment added.');
+  };
+
+  window.clearBoardForDate = function(){
+    var d = dateValue();
+    if(!confirm('Clear board assignments for ' + d + '?')) return;
+    state.assignments = state.assignments.filter(function(a){ return a.date !== d; });
+    Object.keys(state.charge).forEach(function(k){ if(k.indexOf(d + '|') === 0) delete state.charge[k]; });
+    save(); renderAll(); msg('Date cleared.');
+  };
+
+  window.removeAssignment = function(assignId){
+    state.assignments = state.assignments.filter(function(a){ return a.id !== assignId; });
+    save(); renderAll();
+  };
+
+  window.addStaff = function(){
+    var name = normalizeName(document.getElementById('staffName').value);
+    if(!name){ alert('Enter a staff name.'); return; }
+    var existing = state.staff.find(function(s){ return s.name.toLowerCase() === name.toLowerCase(); });
+    var row = existing || {id:id()};
+    row.name = name;
+    row.role = document.getElementById('staffRole').value;
+    row.shift = document.getElementById('staffShift').value;
+    row.fte = document.getElementById('staffFte').value.trim();
+    row.phone = document.getElementById('staffPhone').value.trim();
+    row.email = document.getElementById('staffEmail').value.trim();
+    row.notes = document.getElementById('staffNotes').value.trim();
+    if(!existing) state.staff.push(row);
+    save(); clearStaffForm(); renderAll(); msg('Staff saved.');
+  };
+
+  window.editStaff = function(staffId){
+    var s = state.staff.find(function(x){ return x.id === staffId; });
+    if(!s) return;
+    showTab('directory');
+    document.getElementById('staffName').value=s.name;
+    document.getElementById('staffRole').value=s.role || 'RN';
+    document.getElementById('staffShift').value=s.shift || 'Variable';
+    document.getElementById('staffFte').value=s.fte || '';
+    document.getElementById('staffPhone').value=s.phone || '';
+    document.getElementById('staffEmail').value=s.email || '';
+    document.getElementById('staffNotes').value=s.notes || '';
+  };
+
+  window.deleteStaff = function(staffId){
+    var s = state.staff.find(function(x){ return x.id === staffId; });
+    if(!s || !confirm('Delete ' + s.name + ' from directory?')) return;
+    state.staff = state.staff.filter(function(x){ return x.id !== staffId; });
+    save(); renderAll();
+  };
+
+  window.clearStaffForm = function(){
+    ['staffName','staffFte','staffPhone','staffEmail','staffNotes'].forEach(function(i){ document.getElementById(i).value=''; });
+    document.getElementById('staffRole').value='RN';
+    document.getElementById('staffShift').value='Day';
+  };
+
+  window.setCharge = function(shift, name){
+    var d = document.getElementById('chargeDate').value || dateValue();
+    state.charge[d + '|' + shift] = name;
+    save(); renderAll(); msg('Charge assignment saved.');
+  };
+
+  window.importPastedRows = function(){
+    var text = document.getElementById('pasteRows').value.trim();
+    if(!text){ alert('Paste rows first.'); return; }
+    var count = 0;
+    text.split(/\n+/).forEach(function(line){
+      var parts = line.split(/\t|,/).map(function(p){ return p.trim(); }).filter(Boolean);
+      if(parts.length < 3) return;
+      var date = /^\d{4}-\d{2}-\d{2}$/.test(parts[0]) ? parts.shift() : dateValue();
+      var name = parts[0];
+      var role = (parts[1] || 'RN').toUpperCase();
+      var shift = parts[2] || '0700-1500';
+      if(!shifts.includes(shift)) shift = shifts.find(function(s){ return line.indexOf(s) >= 0; }) || '0700-1500';
+      if(!['RN','LPN','CA','UC'].includes(role)) role = 'RN';
+      upsertStaff(name, role);
+      state.assignments.push({id:id(), date:date, name:normalizeName(name), role:role, shift:shift, type:'Staff', notes:''});
+      count++;
+    });
+    save(); renderAll(); msg('Imported ' + count + ' rows.');
+  };
+
+  window.downloadBackup = function(){
+    var blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '4B_Command_Center_Backup_' + today() + '.json';
+    a.click(); URL.revokeObjectURL(a.href);
+  };
+
+  window.restoreBackup = function(event){
+    var file = event.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try { state = Object.assign({staff:[], assignments:[], charge:{}}, JSON.parse(e.target.result)); save(); renderAll(); msg('Backup restored.'); }
+      catch(err){ alert('Could not read backup file.'); }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
+  window.clearAllData = function(){
+    if(!confirm('Clear all 4B Command Center data saved in this browser?')) return;
+    state = {staff:[], assignments:[], charge:{}};
+    save(); renderAll(); msg('All data cleared.');
+  };
+
+  window.exportStaffingCsv = function(){
+    var lines = ['Date,Shift,Role,Name,Assignment,Notes,Charge'];
+    state.assignments.forEach(function(a){
+      var charge = state.charge[a.date + '|' + a.shift] === a.name ? 'YES' : '';
+      lines.push([a.date,a.shift,a.role,a.name,a.type,a.notes,charge].map(csv).join(','));
+    });
+    var blob = new Blob([lines.join('\n')], {type:'text/csv'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = '4B_Staffing_' + today() + '.csv'; a.click(); URL.revokeObjectURL(a.href);
+  };
+  function csv(v){ return '"' + String(v == null ? '' : v).replace(/"/g,'""') + '"'; }
+
+  function renderAll(){ renderDatalists(); renderBoard(); renderCharge(); renderDirectory(); renderTools(); }
+
+  function renderDatalists(){
+    document.getElementById('staffNames').innerHTML = state.staff.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(s){ return '<option value="' + esc(s.name) + '">'; }).join('');
+  }
+
+  function renderBoard(){
+    var d = dateValue();
+    document.getElementById('boardDate').value = document.getElementById('boardDate').value || d;
+    document.getElementById('viewDate').value = d;
+    document.getElementById('chargeDate').value = document.getElementById('chargeDate').value || d;
+    document.getElementById('boardSubtitle').textContent = 'Date: ' + d;
+    var rows = state.assignments.filter(function(a){ return a.date === d; });
+    var metrics = {RN:0,LPN:0,CA:0,UC:0};
+    rows.forEach(function(a){ if(metrics[a.role] != null) metrics[a.role]++; });
+    document.getElementById('boardMetrics').innerHTML = Object.keys(metrics).map(function(k){ return '<div class="metric"><strong>' + metrics[k] + '</strong><span>' + k + '</span></div>'; }).join('');
+    var html = shifts.map(function(shift){
+      var placed = rows.filter(function(a){ return a.shift === shift; }).sort(function(a,b){ return a.role.localeCompare(b.role) || a.name.localeCompare(b.name); });
+      if(!placed.length) return '';
+      return '<div class="shift-card"><div class="shift-head"><span>' + shift + '</span><span>' + placed.length + '</span></div>' + placed.map(function(a){
+        var charge = state.charge[d + '|' + shift] === a.name ? '<span class="badge charge">Charge</span> ' : '';
+        var type = a.type && a.type !== 'Staff' ? '<span class="badge ' + roleClass(a.type) + '">' + esc(a.type) + '</span> ' : '';
+        return '<div class="staff-line"><span><strong>' + esc(a.role) + '</strong> - ' + esc(a.name) + '<br>' + charge + type + '<span class="muted">' + esc(a.notes || '') + '</span></span><button class="small secondary no-print" onclick="removeAssignment(\'' + a.id + '\')">Remove</button></div>';
+      }).join('') + '</div>';
+    }).join('');
+    document.getElementById('boardView').innerHTML = html || '<p class="muted">No staff on the board for this date yet.</p>';
+  }
+
+  function renderCharge(){
+    var d = document.getElementById('chargeDate').value || dateValue();
+    document.getElementById('chargeDate').value = d;
+    var html = ['0700-1500','1500-1900','1900-0700'].map(function(shift){
+      var assigned = state.assignments.filter(function(a){ return a.date === d && a.shift === shift && (a.role === 'RN' || a.role === 'LPN'); });
+      var value = state.charge[d + '|' + shift] || '';
+      var options = '<option value="">Select charge</option>' + assigned.map(function(a){ return '<option ' + (a.name === value ? 'selected' : '') + ' value="' + esc(a.name) + '">' + esc(a.name) + ' (' + esc(a.role) + ')</option>'; }).join('');
+      return '<div class="shift-card"><div class="shift-head"><span>' + shift + '</span><span>4B Charge</span></div><div style="padding:10px"><select onchange="setCharge(\'' + shift + '\', this.value)">' + options + '</select></div></div>';
+    }).join('');
+    document.getElementById('chargeView').innerHTML = html;
+  }
+
+  function renderDirectory(){
+    var q = String(document.getElementById('directorySearch') ? document.getElementById('directorySearch').value : '').toLowerCase();
+    var rows = state.staff.filter(function(s){ return !q || JSON.stringify(s).toLowerCase().indexOf(q) >= 0; }).sort(function(a,b){ return a.name.localeCompare(b.name); });
+    document.getElementById('directoryRows').innerHTML = rows.map(function(s){
+      var contact = (s.phone ? esc(s.phone) + '<br>' : '') + (s.email ? esc(s.email) : '');
+      return '<tr><td><strong>' + esc(s.name) + '</strong></td><td>' + esc(s.role || '') + '</td><td>' + esc(s.shift || '') + '<br><span class="muted">FTE ' + esc(s.fte || '') + '</span></td><td>' + contact + '</td><td>' + esc(s.notes || '') + '</td><td class="no-print"><button class="small secondary" onclick="editStaff(\'' + s.id + '\')">Edit</button> <button class="small danger" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td></tr>';
+    }).join('') || '<tr><td colspan="6" class="muted">No staff in the directory yet.</td></tr>';
+  }
+
+  function renderTools(){
+    document.getElementById('toolMetrics').innerHTML = '<div class="metric"><strong>' + state.staff.length + '</strong><span>Staff</span></div><div class="metric"><strong>' + state.assignments.length + '</strong><span>Board Rows</span></div><div class="metric"><strong>' + Object.keys(state.charge).filter(function(k){return state.charge[k];}).length + '</strong><span>Charge</span></div><div class="metric"><strong>' + new Set(state.assignments.map(function(a){return a.date;})).size + '</strong><span>Dates</span></div>';
+  }
+
+  function fillShiftSelect(){
+    ['assignShift'].forEach(function(id){ document.getElementById(id).innerHTML = shifts.map(function(s){ return '<option>' + s + '</option>'; }).join(''); });
+  }
+
+  document.getElementById('viewDate').value = today();
+  document.getElementById('boardDate').value = today();
+  document.getElementById('chargeDate').value = today();
+  fillShiftSelect(); renderAll();
+})();
+</script>
+</body>
+</html>
