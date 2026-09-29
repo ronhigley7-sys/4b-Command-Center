@@ -6,18 +6,23 @@
   <title>4B Command Center</title>
   <style>
     :root {
+      --bg: #07172f;
+      --bg-2: #0b2550;
+      --panel: rgba(16, 48, 102, .82);
+      --panel-2: rgba(22, 66, 138, .82);
+      --line: rgba(121, 171, 255, .32);
+      --line-strong: rgba(143, 193, 255, .58);
+      --text: #eaf3ff;
+      --muted: #9db7df;
+      --soft: #d8e7ff;
       --navy: #0b2545;
-      --navy-2: #123862;
-      --gold: #c9a227;
-      --bg: #eaf6ff;
-      --card: rgba(255,255,255,.9);
-      --text: #17202a;
-      --muted: #667085;
-      --border: rgba(118,139,166,.32);
-      --green: #157347;
-      --red: #b42318;
-      --blue: #1d4ed8;
-      --shadow: 0 12px 36px rgba(11,37,69,.12);
+      --cyan: #2bd4ff;
+      --green: #18c99a;
+      --gold: #f4c542;
+      --pink: #ff7abf;
+      --purple: #8a7cff;
+      --red: #ff6b7a;
+      --shadow: 0 16px 42px rgba(0, 0, 0, .24);
     }
     * { box-sizing: border-box; }
     body {
@@ -34,11 +39,10 @@
       inset: -18%;
       z-index: -2;
       background:
-        radial-gradient(circle at 18% 18%, rgba(255,131,176,.55), transparent 23%),
-        radial-gradient(circle at 78% 12%, rgba(125,188,255,.5), transparent 24%),
-        radial-gradient(circle at 82% 78%, rgba(172,132,255,.35), transparent 24%),
-        radial-gradient(circle at 18% 86%, rgba(255,218,121,.32), transparent 22%),
-        linear-gradient(135deg, #e0f7ff 0%, #fff8fd 45%, #eef0ff 100%);
+        radial-gradient(circle at 16% 12%, rgba(50, 170, 255, .52), transparent 24%),
+        radial-gradient(circle at 84% 14%, rgba(255, 122, 191, .34), transparent 22%),
+        radial-gradient(circle at 68% 82%, rgba(138, 124, 255, .42), transparent 25%),
+        linear-gradient(135deg, #061228 0%, #0d2b61 52%, #12214c 100%);
       animation: animeDrift 18s ease-in-out infinite alternate;
     }
     body::after {
@@ -48,81 +52,111 @@
       z-index: -1;
       pointer-events: none;
       background:
-        linear-gradient(120deg, rgba(255,255,255,.46) 0 1px, transparent 1px 54px),
-        radial-gradient(circle at 50% 20%, rgba(255,255,255,.7), transparent 3px),
-        radial-gradient(circle at 10% 60%, rgba(255,255,255,.55), transparent 2px),
-        radial-gradient(circle at 82% 48%, rgba(255,255,255,.6), transparent 2px);
-      opacity: .68;
+        linear-gradient(120deg, rgba(104, 175, 255, .14) 0 1px, transparent 1px 54px),
+        linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 34px),
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,.28), transparent 2px),
+        radial-gradient(circle at 9% 62%, rgba(255,255,255,.22), transparent 2px);
+      opacity: .78;
       animation: animeLines 14s linear infinite;
     }
     @keyframes animeDrift {
       from { transform: translate3d(-1.5%, -1%, 0) scale(1); filter: saturate(1.05); }
-      to { transform: translate3d(1.5%, 1%, 0) scale(1.04); filter: saturate(1.18); }
+      to { transform: translate3d(1.5%, 1%, 0) scale(1.04); filter: saturate(1.2); }
     }
     @keyframes animeLines {
       from { background-position: 0 0, 0 0, 0 0, 0 0; }
-      to { background-position: 90px 60px, 24px 38px, -18px 52px, 30px -24px; }
+      to { background-position: 90px 60px, 0 34px, 24px 38px, -18px 52px; }
     }
     header, nav, main { position: relative; z-index: 1; }
     header {
-      background: linear-gradient(90deg, rgba(11,37,69,.94), rgba(18,56,98,.9));
-      color: #fff;
-      padding: 14px 16px;
+      padding: 12px 16px;
       display: flex;
       gap: 12px;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      box-shadow: 0 12px 30px rgba(11,37,69,.16);
-      backdrop-filter: blur(10px);
+      background: linear-gradient(90deg, rgba(5, 18, 41, .94), rgba(13, 43, 97, .86));
+      border-bottom: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
     }
     .brand h1 { margin: 0; font-size: 22px; letter-spacing: .2px; }
-    .brand p { margin: 3px 0 0; color: #d7e3f5; font-size: 13px; }
+    .brand p { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
     .top-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .cloud-status { border: 1px solid rgba(255,255,255,.32); border-radius: 999px; color: #e9f2ff; padding: 7px 10px; font-size: 12px; font-weight: 800; background: rgba(255,255,255,.1); }
-    .cloud-status.ok { color: #d1fadf; border-color: rgba(171,239,198,.58); }
-    .cloud-status.busy { color: #fff4cf; border-color: rgba(254,223,137,.7); }
-    .cloud-status.bad { color: #ffd5d2; border-color: rgba(254,205,202,.7); }
+    .cloud-status { border: 1px solid rgba(255,255,255,.24); border-radius: 999px; color: #dceaff; padding: 7px 10px; font-size: 12px; font-weight: 800; background: rgba(255,255,255,.08); }
+    .cloud-status.ok { color: #a7f3d0; border-color: rgba(24, 201, 154, .55); }
+    .cloud-status.busy { color: #fff4cf; border-color: rgba(244, 197, 66, .7); }
+    .cloud-status.bad { color: #ffd5d2; border-color: rgba(255, 107, 122, .72); }
     button, input, select, textarea { font: inherit; }
-    button { border: 0; background: var(--navy); color: #fff; padding: 8px 11px; border-radius: 6px; cursor: pointer; font-weight: 700; }
-    button.secondary { background: rgba(238,242,247,.92); color: var(--navy); border: 1px solid var(--border); }
-    button.danger { background: var(--red); }
+    button { border: 0; background: linear-gradient(135deg, #20c997, #13b6e8); color: #04152e; padding: 8px 11px; border-radius: 7px; cursor: pointer; font-weight: 800; box-shadow: 0 8px 20px rgba(0,0,0,.16); }
+    button.secondary { background: rgba(35, 79, 151, .72); color: var(--text); border: 1px solid var(--line); box-shadow: none; }
+    button.danger { background: rgba(255, 107, 122, .92); color: #fff; }
     button.small { padding: 5px 8px; font-size: 12px; }
     nav { display: flex; gap: 6px; padding: 10px 12px 0; overflow-x: auto; }
-    .tab { background: rgba(232,237,245,.86); color: var(--navy); border: 1px solid var(--border); border-bottom: 0; border-radius: 7px 7px 0 0; padding: 9px 13px; min-width: max-content; }
-    .tab.active { background: var(--card); color: var(--navy); box-shadow: 0 -2px 0 var(--gold) inset; }
+    .tab { background: rgba(18, 54, 113, .72); color: #cfe0ff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; min-width: max-content; box-shadow: none; }
+    .tab.active { background: linear-gradient(135deg, rgba(45, 122, 235, .9), rgba(43, 212, 255, .55)); color: #fff; border-color: var(--line-strong); }
     main { padding: 12px; }
-    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; box-shadow: var(--shadow); backdrop-filter: blur(14px); }
+    h2 { margin: 0 0 10px; color: var(--text); font-size: 18px; }
+    h3 { margin: 16px 0 8px; color: var(--text); font-size: 15px; }
+    label { display: block; font-size: 11px; color: var(--muted); font-weight: 800; margin-bottom: 8px; letter-spacing: .04em; text-transform: uppercase; }
+    input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 7px; padding: 9px 10px; background: rgba(8, 30, 67, .76); color: var(--text); outline: none; }
+    input::placeholder, textarea::placeholder { color: #7f9bc5; }
+    textarea { min-height: 72px; resize: vertical; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; box-shadow: var(--shadow); backdrop-filter: blur(14px); }
     .grid { display: grid; gap: 12px; }
     .two { grid-template-columns: minmax(280px, 390px) minmax(0, 1fr); }
-    h2 { margin: 0 0 10px; color: var(--navy); font-size: 18px; }
-    h3 { margin: 16px 0 8px; color: var(--navy); font-size: 15px; }
-    label { display: block; font-size: 12px; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
-    input, select, textarea { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 8px; background: rgba(255,255,255,.92); color: var(--text); }
-    textarea { min-height: 72px; resize: vertical; }
     .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
     .full { grid-column: 1 / -1; }
     .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
     .toolbar { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
     .muted { color: var(--muted); font-size: 12px; }
-    .metric-row { display: grid; grid-template-columns: repeat(4, minmax(100px, 1fr)); gap: 8px; margin-bottom: 12px; }
-    .metric { background: rgba(248,250,252,.82); border: 1px solid var(--border); border-radius: 7px; padding: 10px; }
-    .metric strong { display: block; color: var(--navy); font-size: 22px; }
+    .hidden { display: none; }
+    .message { display: none; margin-bottom: 10px; border-radius: 7px; padding: 9px 11px; background: rgba(24, 201, 154, .14); color: #b9ffe9; border: 1px solid rgba(24, 201, 154, .42); }
+    .message.show { display: block; }
+
+    .board-shell { display: grid; gap: 12px; }
+    .board-controls { background: linear-gradient(180deg, rgba(16, 56, 122, .86), rgba(12, 38, 83, .86)); }
+    .control-grid { display: grid; grid-template-columns: 160px 160px 190px 1fr 130px 170px 160px; gap: 10px; align-items: end; }
+    .control-grid button { min-height: 38px; }
+    .board-title-row { display: flex; justify-content: space-between; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+    .board-title-row h2 { margin-bottom: 2px; }
+    .board-title-row .date-pill { border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; color: #dceaff; background: rgba(255,255,255,.08); font-size: 12px; font-weight: 800; }
+    .metric-row { display: grid; grid-template-columns: repeat(5, minmax(100px, 1fr)); gap: 8px; }
+    .metric { background: rgba(30, 86, 172, .38); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+    .metric strong { display: block; color: #fff; font-size: 22px; }
+    .metric span { color: var(--muted); font-size: 12px; font-weight: 800; }
+    .board-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(305px, 1fr)); gap: 14px; align-items: start; }
+    .shift-card { min-height: 126px; overflow: hidden; border: 1px solid rgba(123, 180, 255, .46); border-radius: 8px; background: linear-gradient(180deg, rgba(38, 98, 202, .72), rgba(23, 67, 145, .68)); box-shadow: 0 12px 28px rgba(0,0,0,.18); }
+    .shift-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: #f2f7ff; font-weight: 900; padding: 10px 12px; border-bottom: 1px solid rgba(160, 204, 255, .28); background: rgba(63, 126, 232, .42); }
+    .count-badge { min-width: 25px; text-align: center; padding: 3px 8px; border-radius: 8px; background: rgba(43, 212, 255, .24); border: 1px solid rgba(43, 212, 255, .44); color: #bff4ff; font-size: 12px; }
+    .staff-list { padding: 8px; display: grid; gap: 7px; }
+    .staff-chip { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 8px; border-radius: 7px; background: rgba(7, 23, 55, .28); border: 1px solid rgba(159, 204, 255, .18); }
+    .staff-name { color: #fff; font-weight: 900; font-size: 13px; overflow-wrap: anywhere; }
+    .pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+    .pill { display: inline-flex; align-items: center; gap: 3px; border-radius: 999px; padding: 2px 7px; font-size: 10px; font-weight: 900; border: 1px solid rgba(255,255,255,.22); color: #eaf3ff; background: rgba(255,255,255,.1); }
+    .pill.time { color: #aef5ff; border-color: rgba(43, 212, 255, .38); background: rgba(43, 212, 255, .12); }
+    .pill.role-rn { color: #d9e7ff; background: rgba(138, 124, 255, .2); }
+    .pill.role-lpn { color: #ffe7b0; background: rgba(244, 197, 66, .18); }
+    .pill.role-ca { color: #b9ffe9; background: rgba(24, 201, 154, .16); }
+    .pill.role-uc { color: #ffd8f0; background: rgba(255, 122, 191, .18); }
+    .pill.charge { color: #ffe7a0; background: rgba(244, 197, 66, .2); border-color: rgba(244, 197, 66, .42); }
+    .pill.orient { color: #b8f7ff; background: rgba(43, 212, 255, .16); }
+    .pill.preceptor { color: #e2d7ff; background: rgba(138, 124, 255, .22); }
+    .pill.agency, .pill.float, .pill.sitter { color: #ffd8f0; background: rgba(255, 122, 191, .18); }
+    .pill.note { color: #dceaff; background: rgba(255,255,255,.09); }
+    .remove-dot { width: 26px; height: 26px; padding: 0; border-radius: 999px; background: transparent; color: #ff9ecf; box-shadow: none; font-size: 18px; line-height: 24px; }
+    .empty-staff { color: #9db7df; font-size: 12px; padding: 9px; border: 1px dashed rgba(159, 204, 255, .25); border-radius: 7px; }
+
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { border-bottom: 1px solid var(--border); text-align: left; padding: 8px; vertical-align: top; }
-    th { color: var(--navy); background: rgba(248,250,252,.86); font-size: 12px; }
-    .badge { display: inline-block; padding: 2px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #eef2ff; color: var(--blue); }
-    .badge.charge { background: #fff4cf; color: #7a5200; }
-    .badge.orient { background: #ecfdf3; color: var(--green); }
-    .badge.preceptor { background: #fef3f2; color: var(--red); }
-    .hidden { display: none; }
-    .message { display: none; margin-bottom: 10px; border-radius: 7px; padding: 9px 11px; background: #ecfdf3; color: var(--green); border: 1px solid #abefc6; }
-    .message.show { display: block; }
-    .shift-card { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; background: rgba(255,255,255,.64); }
-    .shift-head { display: flex; justify-content: space-between; gap: 10px; background: rgba(248,250,252,.86); padding: 8px 10px; color: var(--navy); font-weight: 800; }
-    .staff-line { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; padding: 8px 10px; border-top: 1px solid var(--border); }
-    .staff-line span { overflow-wrap: anywhere; }
+    th, td { border-bottom: 1px solid rgba(121, 171, 255, .22); text-align: left; padding: 8px; vertical-align: top; }
+    th { color: #dceaff; background: rgba(30, 86, 172, .34); font-size: 12px; }
+    td { color: var(--soft); }
+    .shift-card select { background: rgba(8, 30, 67, .68); }
+
+    @media (max-width: 1060px) {
+      .control-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
     @media (max-width: 820px) {
       header { align-items: flex-start; }
       .top-actions { width: 100%; }
@@ -130,15 +164,17 @@
       .cloud-status { flex: 1 0 100%; text-align: center; }
       .two { grid-template-columns: 1fr; }
       .metric-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .form-grid { grid-template-columns: 1fr; }
+      .form-grid, .control-grid { grid-template-columns: 1fr; }
       main { padding: 10px; }
+      .board-grid { grid-template-columns: 1fr; }
     }
     @media print {
       header, nav, .top-actions, .no-print, button { display: none !important; }
-      body { background: #fff; }
+      body { background: #fff; color: #000; }
       body::before, body::after { display: none; }
       main { padding: 0; }
-      .panel { box-shadow: none; border: 0; padding: 0; background: #fff; }
+      .panel, .shift-card { box-shadow: none; background: #fff; border-color: #999; color: #000; }
+      .shift-head, .staff-chip, .metric { background: #fff; color: #000; }
       .hidden { display: none !important; }
       .tab-page:not(.active-print) { display: none !important; }
     }
@@ -168,24 +204,27 @@
   <div id="message" class="message"></div>
 
   <section id="page-board" class="tab-page active-print">
-    <div class="grid two">
-      <div class="panel no-print">
-        <h2>Add To Board</h2>
-        <div class="form-grid">
-          <label>Date<input id="boardDate" type="date"></label>
-          <label>Name<input id="assignName" list="staffNames" placeholder="Last, First"></label>
+    <div class="board-shell">
+      <div class="panel board-controls no-print">
+        <div class="control-grid">
+          <label>View Date<input id="viewDate" type="date" onchange="renderAll()"></label>
+          <label>Filter Role<select id="boardRoleFilter" onchange="renderBoard()"><option value="">All Roles</option><option>RN</option><option>LPN</option><option>CA</option><option>UC</option></select></label>
+          <label>Filter Shift<select id="boardShiftFilter" onchange="renderBoard()"></select></label>
+          <label>Staff Name<input id="assignName" list="staffNames" placeholder="Last, First"></label>
           <label>Role<select id="assignRole"><option>RN</option><option>LPN</option><option>CA</option><option>UC</option></select></label>
           <label>Shift<select id="assignShift"></select></label>
-          <label>Assignment<select id="assignType"><option>Staff</option><option>Orient</option><option>Preceptor</option><option>Float</option><option>Sitter</option></select></label>
-          <label class="full">Notes<input id="assignNotes" placeholder="Optional"></label>
+          <label>Assignment<select id="assignType"><option>Staff</option><option>Agency</option><option>Orient</option><option>Preceptor</option><option>Float</option><option>Sitter</option></select></label>
+          <label class="full">Notes<input id="assignNotes" placeholder="Optional note, count, or assignment detail"></label>
+          <button onclick="addAssignment()">+ Add Staff</button>
+          <button class="secondary" onclick="clearBoardForDate()">Clear Date</button>
         </div>
-        <div class="actions"><button onclick="addAssignment()">Add Staff</button><button class="secondary" onclick="clearBoardForDate()">Clear Date</button></div>
       </div>
-      <div class="panel">
-        <div class="toolbar"><div><h2>4B Board</h2><div class="muted" id="boardSubtitle"></div></div><label class="no-print" style="max-width:190px">View Date<input id="viewDate" type="date" onchange="renderAll()"></label></div>
-        <div class="metric-row" id="boardMetrics"></div>
-        <div id="boardView"></div>
+      <div class="board-title-row">
+        <div><h2>4B Staffing Board</h2><div class="muted" id="boardSubtitle"></div></div>
+        <div class="date-pill" id="boardDatePill"></div>
       </div>
+      <div class="metric-row" id="boardMetrics"></div>
+      <div id="boardView" class="board-grid"></div>
     </div>
   </section>
 
@@ -246,6 +285,7 @@
   var SUPABASE_URL = 'https://xnsdvdfceflmagfhpycw.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_X3VPp9di5Ve-fw_uJJTUyQ_Ztzi6mds';
   var SUPABASE_STATE_KEY = '4b_command_center_state';
+  var roles = ['RN','LPN','CA','UC'];
   var shifts = ['0700-1500','1500-1900','1900-0700','0630-1430','1430-1830','1830-2230','2230-0630','1500-2300','2300-0700'];
   var state = load();
   var saveTimer = null;
@@ -253,29 +293,20 @@
 
   function today(){ var d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
   function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ if(c === '&') return '&amp;'; if(c === '<') return '&lt;'; if(c === '>') return '&gt;'; if(c === '"') return '&quot;'; return '&#39;'; }); }
+  function js(v){ return String(v == null ? '' : v).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
   function id(){ return Date.now().toString(36) + Math.random().toString(36).slice(2); }
   function cleanState(input){
     input = input || {};
-    return {
-      staff: Array.isArray(input.staff) ? input.staff : [],
-      assignments: Array.isArray(input.assignments) ? input.assignments : [],
-      charge: input.charge && typeof input.charge === 'object' && !Array.isArray(input.charge) ? input.charge : {}
-    };
+    return {staff: Array.isArray(input.staff) ? input.staff : [], assignments: Array.isArray(input.assignments) ? input.assignments : [], charge: input.charge && typeof input.charge === 'object' && !Array.isArray(input.charge) ? input.charge : {}};
   }
-  function hasData(input){
-    input = cleanState(input);
-    return input.staff.length > 0 || input.assignments.length > 0 || Object.keys(input.charge).some(function(k){ return input.charge[k]; });
-  }
-  function load(){
-    try { return cleanState(JSON.parse(localStorage.getItem(KEY) || '{}')); }
-    catch(e){ return {staff:[], assignments:[], charge:{}}; }
-  }
+  function hasData(input){ input = cleanState(input); return input.staff.length > 0 || input.assignments.length > 0 || Object.keys(input.charge).some(function(k){ return input.charge[k]; }); }
+  function load(){ try { return cleanState(JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e){ return {staff:[], assignments:[], charge:{}}; } }
   function saveLocal(){ localStorage.setItem(KEY, JSON.stringify(cleanState(state))); }
   function save(){ saveLocal(); if(!isCloudLoading) scheduleCloudSave(); }
   function msg(text){ var el=document.getElementById('message'); el.textContent=text; el.classList.add('show'); setTimeout(function(){el.classList.remove('show');}, 2600); }
   function dateValue(){ return document.getElementById('viewDate').value || today(); }
-  function roleClass(type){ return type === 'Orient' ? 'orient' : type === 'Preceptor' ? 'preceptor' : type === 'Charge' ? 'charge' : ''; }
   function normalizeName(name){ return String(name || '').replace(/\s+/g,' ').trim(); }
+  function className(v){ return String(v || '').toLowerCase().replace(/[^a-z0-9]+/g,'-'); }
   function upsertStaff(name, role){
     name = normalizeName(name);
     if(!name) return;
@@ -283,12 +314,7 @@
     if(existing){ if(role) existing.role = existing.role || role; return; }
     state.staff.push({id:id(), name:name, role:role || 'RN', shift:'Variable', fte:'', phone:'', email:'', notes:''});
   }
-  function setCloudStatus(text, mode){
-    var el = document.getElementById('cloudStatus');
-    if(!el) return;
-    el.textContent = text;
-    el.className = 'cloud-status' + (mode ? ' ' + mode : '');
-  }
+  function setCloudStatus(text, mode){ var el = document.getElementById('cloudStatus'); if(!el) return; el.textContent = text; el.className = 'cloud-status' + (mode ? ' ' + mode : ''); }
   function supabaseRequest(path, options){
     options = options || {};
     var headers = Object.assign({apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY}, options.headers || {});
@@ -310,38 +336,19 @@
       if(rows && rows[0] && rows[0].value){
         var cloud = typeof rows[0].value === 'string' ? JSON.parse(rows[0].value) : rows[0].value;
         cloud = cleanState(cloud);
-        if(hasData(cloud) || !localHasData){
-          state = cloud;
-          isCloudLoading = true;
-          saveLocal();
-          isCloudLoading = false;
-          renderAll();
-          setCloudStatus('Supabase synced', 'ok');
-          return;
-        }
+        if(hasData(cloud) || !localHasData){ state = cloud; isCloudLoading = true; saveLocal(); isCloudLoading = false; renderAll(); setCloudStatus('Supabase synced', 'ok'); return; }
       }
       await saveToSupabase(false);
-    } catch(e) {
-      console.warn('Supabase load failed', e);
-      setCloudStatus('Supabase offline', 'bad');
-    }
+    } catch(e) { console.warn('Supabase load failed', e); setCloudStatus('Supabase offline', 'bad'); }
   }
   async function saveToSupabase(showMessage){
     if(!window.fetch){ setCloudStatus('Supabase unavailable', 'bad'); return; }
     setCloudStatus('Saving to Supabase', 'busy');
     try {
-      await supabaseRequest('/rest/v1/tracker_state?on_conflict=key', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=representation'},
-        body: JSON.stringify({key: SUPABASE_STATE_KEY, value: JSON.stringify(cleanState(state)), updated_by: '4b-command-center'})
-      });
+      await supabaseRequest('/rest/v1/tracker_state?on_conflict=key', {method: 'POST', headers: {'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=representation'}, body: JSON.stringify({key: SUPABASE_STATE_KEY, value: JSON.stringify(cleanState(state)), updated_by: '4b-command-center'})});
       setCloudStatus('Supabase saved', 'ok');
       if(showMessage) msg('Saved to Supabase.');
-    } catch(e) {
-      console.warn('Supabase save failed', e);
-      setCloudStatus('Supabase save failed', 'bad');
-      if(showMessage) msg('Saved locally. Supabase did not update.');
-    }
+    } catch(e) { console.warn('Supabase save failed', e); setCloudStatus('Supabase save failed', 'bad'); if(showMessage) msg('Saved locally. Supabase did not update.'); }
   }
   function scheduleCloudSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(function(){ saveToSupabase(false); }, 700); }
 
@@ -357,7 +364,7 @@
   async function saveNow(){ saveLocal(); await saveToSupabase(true); }
   async function syncNow(){ await loadFromSupabase(); msg('Supabase sync checked.'); }
   function addAssignment(){
-    var date = document.getElementById('boardDate').value || dateValue();
+    var date = dateValue();
     var name = normalizeName(document.getElementById('assignName').value);
     var role = document.getElementById('assignRole').value;
     var shift = document.getElementById('assignShift').value;
@@ -368,7 +375,6 @@
     state.assignments.push({id:id(), date:date, name:name, role:role, shift:shift, type:type, notes:notes});
     document.getElementById('assignName').value='';
     document.getElementById('assignNotes').value='';
-    document.getElementById('viewDate').value = date;
     document.getElementById('chargeDate').value = date;
     save(); renderAll(); msg('Board assignment added.');
   }
@@ -413,11 +419,7 @@
     state.staff = state.staff.filter(function(x){ return x.id !== staffId; });
     save(); renderAll();
   }
-  function clearStaffForm(){
-    ['staffName','staffFte','staffPhone','staffEmail','staffNotes'].forEach(function(i){ document.getElementById(i).value=''; });
-    document.getElementById('staffRole').value='RN';
-    document.getElementById('staffShift').value='Day';
-  }
+  function clearStaffForm(){ ['staffName','staffFte','staffPhone','staffEmail','staffNotes'].forEach(function(i){ document.getElementById(i).value=''; }); document.getElementById('staffRole').value='RN'; document.getElementById('staffShift').value='Day'; }
   function setCharge(shift, name){ var d = document.getElementById('chargeDate').value || dateValue(); state.charge[d + '|' + shift] = name; save(); renderAll(); msg('Charge assignment saved.'); }
   function importPastedRows(){
     var text = document.getElementById('pasteRows').value.trim();
@@ -430,72 +432,59 @@
       var name = parts[0];
       var role = (parts[1] || 'RN').toUpperCase();
       var shift = parts[2] || '0700-1500';
-      if(!shifts.includes(shift)) shift = shifts.find(function(s){ return line.indexOf(s) >= 0; }) || '0700-1500';
-      if(!['RN','LPN','CA','UC'].includes(role)) role = 'RN';
+      if(shifts.indexOf(shift) < 0) shift = shifts.find(function(s){ return line.indexOf(s) >= 0; }) || '0700-1500';
+      if(roles.indexOf(role) < 0) role = 'RN';
       upsertStaff(name, role);
       state.assignments.push({id:id(), date:date, name:normalizeName(name), role:role, shift:shift, type:'Staff', notes:''});
       count++;
     });
     save(); renderAll(); msg('Imported ' + count + ' rows.');
   }
-  function downloadBackup(){
-    var blob = new Blob([JSON.stringify(cleanState(state), null, 2)], {type:'application/json'});
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = '4B_Command_Center_Backup_' + today() + '.json';
-    a.click(); URL.revokeObjectURL(a.href);
-  }
+  function downloadBackup(){ var blob = new Blob([JSON.stringify(cleanState(state), null, 2)], {type:'application/json'}); var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '4B_Command_Center_Backup_' + today() + '.json'; a.click(); URL.revokeObjectURL(a.href); }
   function restoreBackup(event){
     var file = event.target.files[0];
     if(!file) return;
     var reader = new FileReader();
-    reader.onload = function(e){
-      try { state = cleanState(JSON.parse(e.target.result)); save(); renderAll(); msg('Backup restored.'); }
-      catch(err){ alert('Could not read backup file.'); }
-    };
+    reader.onload = function(e){ try { state = cleanState(JSON.parse(e.target.result)); save(); renderAll(); msg('Backup restored.'); } catch(err){ alert('Could not read backup file.'); } };
     reader.readAsText(file);
     event.target.value = '';
   }
-  function clearAllData(){
-    if(!confirm('Clear all 4B Command Center data saved in this browser and Supabase?')) return;
-    state = {staff:[], assignments:[], charge:{}};
-    save(); renderAll(); msg('All data cleared.');
-  }
+  function clearAllData(){ if(!confirm('Clear all 4B Command Center data saved in this browser and Supabase?')) return; state = {staff:[], assignments:[], charge:{}}; save(); renderAll(); msg('All data cleared.'); }
   function exportStaffingCsv(){
     var lines = ['Date,Shift,Role,Name,Assignment,Notes,Charge'];
-    state.assignments.forEach(function(a){
-      var charge = state.charge[a.date + '|' + a.shift] === a.name ? 'YES' : '';
-      lines.push([a.date,a.shift,a.role,a.name,a.type,a.notes,charge].map(csv).join(','));
-    });
+    state.assignments.forEach(function(a){ var charge = state.charge[a.date + '|' + a.shift] === a.name ? 'YES' : ''; lines.push([a.date,a.shift,a.role,a.name,a.type,a.notes,charge].map(csv).join(',')); });
     var blob = new Blob([lines.join('\n')], {type:'text/csv'});
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = '4B_Staffing_' + today() + '.csv'; a.click(); URL.revokeObjectURL(a.href);
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '4B_Staffing_' + today() + '.csv'; a.click(); URL.revokeObjectURL(a.href);
   }
   function csv(v){ return '"' + String(v == null ? '' : v).replace(/"/g,'""') + '"'; }
   function renderAll(){ renderDatalists(); renderBoard(); renderCharge(); renderDirectory(); renderTools(); }
-  function renderDatalists(){
-    document.getElementById('staffNames').innerHTML = state.staff.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(s){ return '<option value="' + esc(s.name) + '">'; }).join('');
-  }
+  function renderDatalists(){ document.getElementById('staffNames').innerHTML = state.staff.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(s){ return '<option value="' + esc(s.name) + '">'; }).join(''); }
   function renderBoard(){
     var d = dateValue();
-    document.getElementById('boardDate').value = document.getElementById('boardDate').value || d;
-    document.getElementById('viewDate').value = d;
+    var roleFilter = document.getElementById('boardRoleFilter').value;
+    var shiftFilter = document.getElementById('boardShiftFilter').value;
     document.getElementById('chargeDate').value = document.getElementById('chargeDate').value || d;
-    document.getElementById('boardSubtitle').textContent = 'Date: ' + d;
-    var rows = state.assignments.filter(function(a){ return a.date === d; });
+    document.getElementById('boardSubtitle').textContent = 'Compact live view by shift and role';
+    document.getElementById('boardDatePill').textContent = d;
+    var dateRows = state.assignments.filter(function(a){ return a.date === d; });
     var metrics = {RN:0,LPN:0,CA:0,UC:0};
-    rows.forEach(function(a){ if(metrics[a.role] != null) metrics[a.role]++; });
-    document.getElementById('boardMetrics').innerHTML = Object.keys(metrics).map(function(k){ return '<div class="metric"><strong>' + metrics[k] + '</strong><span>' + k + '</span></div>'; }).join('');
-    var html = shifts.map(function(shift){
+    dateRows.forEach(function(a){ if(metrics[a.role] != null) metrics[a.role]++; });
+    document.getElementById('boardMetrics').innerHTML = roles.map(function(k){ return '<div class="metric"><strong>' + metrics[k] + '</strong><span>' + k + '</span></div>'; }).join('') + '<div class="metric"><strong>' + dateRows.length + '</strong><span>Total</span></div>';
+    var rows = dateRows.filter(function(a){ return !roleFilter || a.role === roleFilter; });
+    var visibleShifts = shiftFilter ? [shiftFilter] : shifts;
+    document.getElementById('boardView').innerHTML = visibleShifts.map(function(shift){
       var placed = rows.filter(function(a){ return a.shift === shift; }).sort(function(a,b){ return a.role.localeCompare(b.role) || a.name.localeCompare(b.name); });
-      if(!placed.length) return '';
-      return '<div class="shift-card"><div class="shift-head"><span>' + shift + '</span><span>' + placed.length + '</span></div>' + placed.map(function(a){
-        var charge = state.charge[d + '|' + shift] === a.name ? '<span class="badge charge">Charge</span> ' : '';
-        var type = a.type && a.type !== 'Staff' ? '<span class="badge ' + roleClass(a.type) + '">' + esc(a.type) + '</span> ' : '';
-        return '<div class="staff-line"><span><strong>' + esc(a.role) + '</strong> - ' + esc(a.name) + '<br>' + charge + type + '<span class="muted">' + esc(a.notes || '') + '</span></span><button class="small secondary no-print" onclick="removeAssignment(\'' + a.id + '\')">Remove</button></div>';
-      }).join('') + '</div>';
+      var body = placed.length ? placed.map(function(a){ return staffChip(a, shift, d); }).join('') : '<div class="empty-staff">No staff assigned</div>';
+      return '<div class="shift-card"><div class="shift-head"><span>' + esc(shift) + '</span><span class="count-badge">' + placed.length + '</span></div><div class="staff-list">' + body + '</div></div>';
     }).join('');
-    document.getElementById('boardView').innerHTML = html || '<p class="muted">No staff on the board for this date yet.</p>';
+  }
+  function staffChip(a, shift, date){
+    var isCharge = state.charge[date + '|' + shift] === a.name;
+    var pills = '<span class="pill role-' + className(a.role) + '">' + esc(a.role) + '</span><span class="pill time">' + esc(shift) + '</span>';
+    if(a.type && a.type !== 'Staff') pills += '<span class="pill ' + className(a.type) + '">' + esc(a.type) + '</span>';
+    if(isCharge) pills += '<span class="pill charge">Charge</span>';
+    if(a.notes) pills += '<span class="pill note">' + esc(a.notes) + '</span>';
+    return '<div class="staff-chip"><div><div class="staff-name">' + esc(a.name) + '</div><div class="pills">' + pills + '</div></div><button class="remove-dot no-print" onclick="removeAssignment(\'' + js(a.id) + '\')">x</button></div>';
   }
   function renderCharge(){
     var d = document.getElementById('chargeDate').value || dateValue();
@@ -512,13 +501,15 @@
     var rows = state.staff.filter(function(s){ return !q || JSON.stringify(s).toLowerCase().indexOf(q) >= 0; }).sort(function(a,b){ return a.name.localeCompare(b.name); });
     document.getElementById('directoryRows').innerHTML = rows.map(function(s){
       var contact = (s.phone ? esc(s.phone) + '<br>' : '') + (s.email ? esc(s.email) : '');
-      return '<tr><td><strong>' + esc(s.name) + '</strong></td><td>' + esc(s.role || '') + '</td><td>' + esc(s.shift || '') + '<br><span class="muted">FTE ' + esc(s.fte || '') + '</span></td><td>' + contact + '</td><td>' + esc(s.notes || '') + '</td><td class="no-print"><button class="small secondary" onclick="editStaff(\'' + s.id + '\')">Edit</button> <button class="small danger" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td></tr>';
+      return '<tr><td><strong>' + esc(s.name) + '</strong></td><td><span class="pill role-' + className(s.role) + '">' + esc(s.role || '') + '</span></td><td>' + esc(s.shift || '') + '<br><span class="muted">FTE ' + esc(s.fte || '') + '</span></td><td>' + contact + '</td><td>' + esc(s.notes || '') + '</td><td class="no-print"><button class="small secondary" onclick="editStaff(\'' + js(s.id) + '\')">Edit</button> <button class="small danger" onclick="deleteStaff(\'' + js(s.id) + '\')">Delete</button></td></tr>';
     }).join('') || '<tr><td colspan="6" class="muted">No staff in the directory yet.</td></tr>';
   }
-  function renderTools(){
-    document.getElementById('toolMetrics').innerHTML = '<div class="metric"><strong>' + state.staff.length + '</strong><span>Staff</span></div><div class="metric"><strong>' + state.assignments.length + '</strong><span>Board Rows</span></div><div class="metric"><strong>' + Object.keys(state.charge).filter(function(k){return state.charge[k];}).length + '</strong><span>Charge</span></div><div class="metric"><strong>' + new Set(state.assignments.map(function(a){return a.date;})).size + '</strong><span>Dates</span></div>';
+  function renderTools(){ document.getElementById('toolMetrics').innerHTML = '<div class="metric"><strong>' + state.staff.length + '</strong><span>Staff</span></div><div class="metric"><strong>' + state.assignments.length + '</strong><span>Board Rows</span></div><div class="metric"><strong>' + Object.keys(state.charge).filter(function(k){return state.charge[k];}).length + '</strong><span>Charge</span></div><div class="metric"><strong>' + new Set(state.assignments.map(function(a){return a.date;})).size + '</strong><span>Dates</span></div>'; }
+  function fillShiftSelect(){
+    var shiftOptions = shifts.map(function(s){ return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join('');
+    document.getElementById('assignShift').innerHTML = shiftOptions;
+    document.getElementById('boardShiftFilter').innerHTML = '<option value="">All Shifts</option>' + shiftOptions;
   }
-  function fillShiftSelect(){ document.getElementById('assignShift').innerHTML = shifts.map(function(s){ return '<option>' + s + '</option>'; }).join(''); }
 
   window.showTab = showTab;
   window.saveNow = saveNow;
@@ -537,11 +528,11 @@
   window.clearAllData = clearAllData;
   window.exportStaffingCsv = exportStaffingCsv;
   window.renderAll = renderAll;
+  window.renderBoard = renderBoard;
   window.renderCharge = renderCharge;
   window.renderDirectory = renderDirectory;
 
   document.getElementById('viewDate').value = today();
-  document.getElementById('boardDate').value = today();
   document.getElementById('chargeDate').value = today();
   fillShiftSelect();
   renderAll();
