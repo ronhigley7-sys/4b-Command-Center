@@ -16,7 +16,6 @@
       --border: rgba(118,139,166,.32);
       --green: #157347;
       --red: #b42318;
-      --amber: #b54708;
       --blue: #1d4ed8;
       --shadow: 0 12px 36px rgba(11,37,69,.12);
     }
@@ -252,8 +251,8 @@
   var saveTimer = null;
   var isCloudLoading = false;
 
-  function today(){ return new Date().toISOString().slice(0,10); }
-  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function today(){ var d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ if(c === '&') return '&amp;'; if(c === '<') return '&lt;'; if(c === '>') return '&gt;'; if(c === '"') return '&quot;'; return '&#39;'; }); }
   function id(){ return Date.now().toString(36) + Math.random().toString(36).slice(2); }
   function cleanState(input){
     input = input || {};
@@ -292,10 +291,7 @@
   }
   function supabaseRequest(path, options){
     options = options || {};
-    var headers = Object.assign({
-      apikey: SUPABASE_KEY,
-      Authorization: 'Bearer ' + SUPABASE_KEY
-    }, options.headers || {});
+    var headers = Object.assign({apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY}, options.headers || {});
     return fetch(SUPABASE_URL + path, Object.assign({}, options, {headers: headers})).then(function(res){
       return res.text().then(function(text){
         var data = null;
@@ -336,10 +332,7 @@
     try {
       await supabaseRequest('/rest/v1/tracker_state?on_conflict=key', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Prefer: 'resolution=merge-duplicates,return=representation'
-        },
+        headers: {'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=representation'},
         body: JSON.stringify({key: SUPABASE_STATE_KEY, value: JSON.stringify(cleanState(state)), updated_by: '4b-command-center'})
       });
       setCloudStatus('Supabase saved', 'ok');
@@ -350,12 +343,9 @@
       if(showMessage) msg('Saved locally. Supabase did not update.');
     }
   }
-  function scheduleCloudSave(){
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(function(){ saveToSupabase(false); }, 700);
-  }
+  function scheduleCloudSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(function(){ saveToSupabase(false); }, 700); }
 
-  window.showTab = function(tab){
+  function showTab(tab){
     document.querySelectorAll('.tab').forEach(function(b){ b.classList.toggle('active', b.dataset.tab === tab); });
     document.querySelectorAll('.tab-page').forEach(function(p){ p.classList.add('hidden'); p.classList.remove('active-print'); });
     var page = document.getElementById('page-' + tab);
@@ -363,12 +353,10 @@
     if(tab === 'charge') renderCharge();
     if(tab === 'directory') renderDirectory();
     if(tab === 'tools') renderTools();
-  };
-
-  window.saveNow = async function(){ saveLocal(); await saveToSupabase(true); };
-  window.syncNow = async function(){ await loadFromSupabase(); msg('Supabase sync checked.'); };
-
-  window.addAssignment = function(){
+  }
+  async function saveNow(){ saveLocal(); await saveToSupabase(true); }
+  async function syncNow(){ await loadFromSupabase(); msg('Supabase sync checked.'); }
+  function addAssignment(){
     var date = document.getElementById('boardDate').value || dateValue();
     var name = normalizeName(document.getElementById('assignName').value);
     var role = document.getElementById('assignRole').value;
@@ -383,22 +371,16 @@
     document.getElementById('viewDate').value = date;
     document.getElementById('chargeDate').value = date;
     save(); renderAll(); msg('Board assignment added.');
-  };
-
-  window.clearBoardForDate = function(){
+  }
+  function clearBoardForDate(){
     var d = dateValue();
     if(!confirm('Clear board assignments for ' + d + '?')) return;
     state.assignments = state.assignments.filter(function(a){ return a.date !== d; });
     Object.keys(state.charge).forEach(function(k){ if(k.indexOf(d + '|') === 0) delete state.charge[k]; });
     save(); renderAll(); msg('Date cleared.');
-  };
-
-  window.removeAssignment = function(assignId){
-    state.assignments = state.assignments.filter(function(a){ return a.id !== assignId; });
-    save(); renderAll();
-  };
-
-  window.addStaff = function(){
+  }
+  function removeAssignment(assignId){ state.assignments = state.assignments.filter(function(a){ return a.id !== assignId; }); save(); renderAll(); }
+  function addStaff(){
     var name = normalizeName(document.getElementById('staffName').value);
     if(!name){ alert('Enter a staff name.'); return; }
     var existing = state.staff.find(function(s){ return s.name.toLowerCase() === name.toLowerCase(); });
@@ -412,9 +394,8 @@
     row.notes = document.getElementById('staffNotes').value.trim();
     if(!existing) state.staff.push(row);
     save(); clearStaffForm(); renderAll(); msg('Staff saved.');
-  };
-
-  window.editStaff = function(staffId){
+  }
+  function editStaff(staffId){
     var s = state.staff.find(function(x){ return x.id === staffId; });
     if(!s) return;
     showTab('directory');
@@ -425,28 +406,20 @@
     document.getElementById('staffPhone').value=s.phone || '';
     document.getElementById('staffEmail').value=s.email || '';
     document.getElementById('staffNotes').value=s.notes || '';
-  };
-
-  window.deleteStaff = function(staffId){
+  }
+  function deleteStaff(staffId){
     var s = state.staff.find(function(x){ return x.id === staffId; });
     if(!s || !confirm('Delete ' + s.name + ' from directory?')) return;
     state.staff = state.staff.filter(function(x){ return x.id !== staffId; });
     save(); renderAll();
-  };
-
-  window.clearStaffForm = function(){
+  }
+  function clearStaffForm(){
     ['staffName','staffFte','staffPhone','staffEmail','staffNotes'].forEach(function(i){ document.getElementById(i).value=''; });
     document.getElementById('staffRole').value='RN';
     document.getElementById('staffShift').value='Day';
-  };
-
-  window.setCharge = function(shift, name){
-    var d = document.getElementById('chargeDate').value || dateValue();
-    state.charge[d + '|' + shift] = name;
-    save(); renderAll(); msg('Charge assignment saved.');
-  };
-
-  window.importPastedRows = function(){
+  }
+  function setCharge(shift, name){ var d = document.getElementById('chargeDate').value || dateValue(); state.charge[d + '|' + shift] = name; save(); renderAll(); msg('Charge assignment saved.'); }
+  function importPastedRows(){
     var text = document.getElementById('pasteRows').value.trim();
     if(!text){ alert('Paste rows first.'); return; }
     var count = 0;
@@ -464,17 +437,15 @@
       count++;
     });
     save(); renderAll(); msg('Imported ' + count + ' rows.');
-  };
-
-  window.downloadBackup = function(){
+  }
+  function downloadBackup(){
     var blob = new Blob([JSON.stringify(cleanState(state), null, 2)], {type:'application/json'});
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = '4B_Command_Center_Backup_' + today() + '.json';
     a.click(); URL.revokeObjectURL(a.href);
-  };
-
-  window.restoreBackup = function(event){
+  }
+  function restoreBackup(event){
     var file = event.target.files[0];
     if(!file) return;
     var reader = new FileReader();
@@ -484,15 +455,13 @@
     };
     reader.readAsText(file);
     event.target.value = '';
-  };
-
-  window.clearAllData = function(){
+  }
+  function clearAllData(){
     if(!confirm('Clear all 4B Command Center data saved in this browser and Supabase?')) return;
     state = {staff:[], assignments:[], charge:{}};
     save(); renderAll(); msg('All data cleared.');
-  };
-
-  window.exportStaffingCsv = function(){
+  }
+  function exportStaffingCsv(){
     var lines = ['Date,Shift,Role,Name,Assignment,Notes,Charge'];
     state.assignments.forEach(function(a){
       var charge = state.charge[a.date + '|' + a.shift] === a.name ? 'YES' : '';
@@ -501,15 +470,12 @@
     var blob = new Blob([lines.join('\n')], {type:'text/csv'});
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = '4B_Staffing_' + today() + '.csv'; a.click(); URL.revokeObjectURL(a.href);
-  };
+  }
   function csv(v){ return '"' + String(v == null ? '' : v).replace(/"/g,'""') + '"'; }
-
-  window.renderAll = function(){ renderDatalists(); renderBoard(); renderCharge(); renderDirectory(); renderTools(); };
-
+  function renderAll(){ renderDatalists(); renderBoard(); renderCharge(); renderDirectory(); renderTools(); }
   function renderDatalists(){
     document.getElementById('staffNames').innerHTML = state.staff.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(s){ return '<option value="' + esc(s.name) + '">'; }).join('');
   }
-
   function renderBoard(){
     var d = dateValue();
     document.getElementById('boardDate').value = document.getElementById('boardDate').value || d;
@@ -531,19 +497,16 @@
     }).join('');
     document.getElementById('boardView').innerHTML = html || '<p class="muted">No staff on the board for this date yet.</p>';
   }
-
   function renderCharge(){
     var d = document.getElementById('chargeDate').value || dateValue();
     document.getElementById('chargeDate').value = d;
-    var html = ['0700-1500','1500-1900','1900-0700'].map(function(shift){
+    document.getElementById('chargeView').innerHTML = ['0700-1500','1500-1900','1900-0700'].map(function(shift){
       var assigned = state.assignments.filter(function(a){ return a.date === d && a.shift === shift && (a.role === 'RN' || a.role === 'LPN'); });
       var value = state.charge[d + '|' + shift] || '';
       var options = '<option value="">Select charge</option>' + assigned.map(function(a){ return '<option ' + (a.name === value ? 'selected' : '') + ' value="' + esc(a.name) + '">' + esc(a.name) + ' (' + esc(a.role) + ')</option>'; }).join('');
       return '<div class="shift-card"><div class="shift-head"><span>' + shift + '</span><span>4B Charge</span></div><div style="padding:10px"><select onchange="setCharge(\'' + shift + '\', this.value)">' + options + '</select></div></div>';
     }).join('');
-    document.getElementById('chargeView').innerHTML = html;
   }
-
   function renderDirectory(){
     var q = String(document.getElementById('directorySearch') ? document.getElementById('directorySearch').value : '').toLowerCase();
     var rows = state.staff.filter(function(s){ return !q || JSON.stringify(s).toLowerCase().indexOf(q) >= 0; }).sort(function(a,b){ return a.name.localeCompare(b.name); });
@@ -552,14 +515,30 @@
       return '<tr><td><strong>' + esc(s.name) + '</strong></td><td>' + esc(s.role || '') + '</td><td>' + esc(s.shift || '') + '<br><span class="muted">FTE ' + esc(s.fte || '') + '</span></td><td>' + contact + '</td><td>' + esc(s.notes || '') + '</td><td class="no-print"><button class="small secondary" onclick="editStaff(\'' + s.id + '\')">Edit</button> <button class="small danger" onclick="deleteStaff(\'' + s.id + '\')">Delete</button></td></tr>';
     }).join('') || '<tr><td colspan="6" class="muted">No staff in the directory yet.</td></tr>';
   }
-
   function renderTools(){
     document.getElementById('toolMetrics').innerHTML = '<div class="metric"><strong>' + state.staff.length + '</strong><span>Staff</span></div><div class="metric"><strong>' + state.assignments.length + '</strong><span>Board Rows</span></div><div class="metric"><strong>' + Object.keys(state.charge).filter(function(k){return state.charge[k];}).length + '</strong><span>Charge</span></div><div class="metric"><strong>' + new Set(state.assignments.map(function(a){return a.date;})).size + '</strong><span>Dates</span></div>';
   }
+  function fillShiftSelect(){ document.getElementById('assignShift').innerHTML = shifts.map(function(s){ return '<option>' + s + '</option>'; }).join(''); }
 
-  function fillShiftSelect(){
-    ['assignShift'].forEach(function(id){ document.getElementById(id).innerHTML = shifts.map(function(s){ return '<option>' + s + '</option>'; }).join(''); });
-  }
+  window.showTab = showTab;
+  window.saveNow = saveNow;
+  window.syncNow = syncNow;
+  window.addAssignment = addAssignment;
+  window.clearBoardForDate = clearBoardForDate;
+  window.removeAssignment = removeAssignment;
+  window.addStaff = addStaff;
+  window.editStaff = editStaff;
+  window.deleteStaff = deleteStaff;
+  window.clearStaffForm = clearStaffForm;
+  window.setCharge = setCharge;
+  window.importPastedRows = importPastedRows;
+  window.downloadBackup = downloadBackup;
+  window.restoreBackup = restoreBackup;
+  window.clearAllData = clearAllData;
+  window.exportStaffingCsv = exportStaffingCsv;
+  window.renderAll = renderAll;
+  window.renderCharge = renderCharge;
+  window.renderDirectory = renderDirectory;
 
   document.getElementById('viewDate').value = today();
   document.getElementById('boardDate').value = today();
