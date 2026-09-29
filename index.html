@@ -9,38 +9,97 @@
       --navy: #0b2545;
       --navy-2: #123862;
       --gold: #c9a227;
-      --bg: #f4f7fb;
-      --card: #ffffff;
+      --bg: #eaf6ff;
+      --card: rgba(255,255,255,.9);
       --text: #17202a;
       --muted: #667085;
-      --border: #d8dee8;
+      --border: rgba(118,139,166,.32);
       --green: #157347;
       --red: #b42318;
       --amber: #b54708;
       --blue: #1d4ed8;
+      --shadow: 0 12px 36px rgba(11,37,69,.12);
     }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); }
-    header { background: linear-gradient(90deg, var(--navy), var(--navy-2)); color: #fff; padding: 14px 16px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -18%;
+      z-index: -2;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255,131,176,.55), transparent 23%),
+        radial-gradient(circle at 78% 12%, rgba(125,188,255,.5), transparent 24%),
+        radial-gradient(circle at 82% 78%, rgba(172,132,255,.35), transparent 24%),
+        radial-gradient(circle at 18% 86%, rgba(255,218,121,.32), transparent 22%),
+        linear-gradient(135deg, #e0f7ff 0%, #fff8fd 45%, #eef0ff 100%);
+      animation: animeDrift 18s ease-in-out infinite alternate;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,.46) 0 1px, transparent 1px 54px),
+        radial-gradient(circle at 50% 20%, rgba(255,255,255,.7), transparent 3px),
+        radial-gradient(circle at 10% 60%, rgba(255,255,255,.55), transparent 2px),
+        radial-gradient(circle at 82% 48%, rgba(255,255,255,.6), transparent 2px);
+      opacity: .68;
+      animation: animeLines 14s linear infinite;
+    }
+    @keyframes animeDrift {
+      from { transform: translate3d(-1.5%, -1%, 0) scale(1); filter: saturate(1.05); }
+      to { transform: translate3d(1.5%, 1%, 0) scale(1.04); filter: saturate(1.18); }
+    }
+    @keyframes animeLines {
+      from { background-position: 0 0, 0 0, 0 0, 0 0; }
+      to { background-position: 90px 60px, 24px 38px, -18px 52px, 30px -24px; }
+    }
+    header, nav, main { position: relative; z-index: 1; }
+    header {
+      background: linear-gradient(90deg, rgba(11,37,69,.94), rgba(18,56,98,.9));
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      box-shadow: 0 12px 30px rgba(11,37,69,.16);
+      backdrop-filter: blur(10px);
+    }
     .brand h1 { margin: 0; font-size: 22px; letter-spacing: .2px; }
     .brand p { margin: 3px 0 0; color: #d7e3f5; font-size: 13px; }
-    .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .top-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .cloud-status { border: 1px solid rgba(255,255,255,.32); border-radius: 999px; color: #e9f2ff; padding: 7px 10px; font-size: 12px; font-weight: 800; background: rgba(255,255,255,.1); }
+    .cloud-status.ok { color: #d1fadf; border-color: rgba(171,239,198,.58); }
+    .cloud-status.busy { color: #fff4cf; border-color: rgba(254,223,137,.7); }
+    .cloud-status.bad { color: #ffd5d2; border-color: rgba(254,205,202,.7); }
     button, input, select, textarea { font: inherit; }
     button { border: 0; background: var(--navy); color: #fff; padding: 8px 11px; border-radius: 6px; cursor: pointer; font-weight: 700; }
-    button.secondary { background: #eef2f7; color: var(--navy); border: 1px solid var(--border); }
+    button.secondary { background: rgba(238,242,247,.92); color: var(--navy); border: 1px solid var(--border); }
     button.danger { background: var(--red); }
     button.small { padding: 5px 8px; font-size: 12px; }
     nav { display: flex; gap: 6px; padding: 10px 12px 0; overflow-x: auto; }
-    .tab { background: #e8edf5; color: var(--navy); border: 1px solid var(--border); border-bottom: 0; border-radius: 7px 7px 0 0; padding: 9px 13px; min-width: max-content; }
+    .tab { background: rgba(232,237,245,.86); color: var(--navy); border: 1px solid var(--border); border-bottom: 0; border-radius: 7px 7px 0 0; padding: 9px 13px; min-width: max-content; }
     .tab.active { background: var(--card); color: var(--navy); box-shadow: 0 -2px 0 var(--gold) inset; }
     main { padding: 12px; }
-    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; box-shadow: 0 1px 2px rgba(16,24,40,.05); }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; box-shadow: var(--shadow); backdrop-filter: blur(14px); }
     .grid { display: grid; gap: 12px; }
     .two { grid-template-columns: minmax(280px, 390px) minmax(0, 1fr); }
     h2 { margin: 0 0 10px; color: var(--navy); font-size: 18px; }
     h3 { margin: 16px 0 8px; color: var(--navy); font-size: 15px; }
     label { display: block; font-size: 12px; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
-    input, select, textarea { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 8px; background: #fff; color: var(--text); }
+    input, select, textarea { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 8px; background: rgba(255,255,255,.92); color: var(--text); }
     textarea { min-height: 72px; resize: vertical; }
     .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
     .full { grid-column: 1 / -1; }
@@ -48,12 +107,12 @@
     .toolbar { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
     .muted { color: var(--muted); font-size: 12px; }
     .metric-row { display: grid; grid-template-columns: repeat(4, minmax(100px, 1fr)); gap: 8px; margin-bottom: 12px; }
-    .metric { background: #f8fafc; border: 1px solid var(--border); border-radius: 7px; padding: 10px; }
+    .metric { background: rgba(248,250,252,.82); border: 1px solid var(--border); border-radius: 7px; padding: 10px; }
     .metric strong { display: block; color: var(--navy); font-size: 22px; }
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th, td { border-bottom: 1px solid var(--border); text-align: left; padding: 8px; vertical-align: top; }
-    th { color: var(--navy); background: #f8fafc; font-size: 12px; }
+    th { color: var(--navy); background: rgba(248,250,252,.86); font-size: 12px; }
     .badge { display: inline-block; padding: 2px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #eef2ff; color: var(--blue); }
     .badge.charge { background: #fff4cf; color: #7a5200; }
     .badge.orient { background: #ecfdf3; color: var(--green); }
@@ -61,14 +120,15 @@
     .hidden { display: none; }
     .message { display: none; margin-bottom: 10px; border-radius: 7px; padding: 9px 11px; background: #ecfdf3; color: var(--green); border: 1px solid #abefc6; }
     .message.show { display: block; }
-    .shift-card { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
-    .shift-head { display: flex; justify-content: space-between; gap: 10px; background: #f8fafc; padding: 8px 10px; color: var(--navy); font-weight: 800; }
+    .shift-card { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; background: rgba(255,255,255,.64); }
+    .shift-head { display: flex; justify-content: space-between; gap: 10px; background: rgba(248,250,252,.86); padding: 8px 10px; color: var(--navy); font-weight: 800; }
     .staff-line { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; padding: 8px 10px; border-top: 1px solid var(--border); }
     .staff-line span { overflow-wrap: anywhere; }
     @media (max-width: 820px) {
       header { align-items: flex-start; }
       .top-actions { width: 100%; }
       .top-actions button { flex: 1 1 auto; }
+      .cloud-status { flex: 1 0 100%; text-align: center; }
       .two { grid-template-columns: 1fr; }
       .metric-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .form-grid { grid-template-columns: 1fr; }
@@ -77,8 +137,9 @@
     @media print {
       header, nav, .top-actions, .no-print, button { display: none !important; }
       body { background: #fff; }
+      body::before, body::after { display: none; }
       main { padding: 0; }
-      .panel { box-shadow: none; border: 0; padding: 0; }
+      .panel { box-shadow: none; border: 0; padding: 0; background: #fff; }
       .hidden { display: none !important; }
       .tab-page:not(.active-print) { display: none !important; }
     }
@@ -91,8 +152,10 @@
     <p>Board, charge assignments, staff directory, and tools</p>
   </div>
   <div class="top-actions no-print">
+    <span id="cloudStatus" class="cloud-status busy">Supabase starting</span>
     <button class="secondary" onclick="window.print()">Print</button>
     <button class="secondary" onclick="exportStaffingCsv()">Export CSV</button>
+    <button class="secondary" onclick="syncNow()">Sync Supabase</button>
     <button onclick="saveNow()">Save</button>
   </div>
 </header>
@@ -181,17 +244,35 @@
 (function(){
   'use strict';
   var KEY = 'aomc-4b-command-center-v1';
+  var SUPABASE_URL = 'https://xnsdvdfceflmagfhpycw.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_X3VPp9di5Ve-fw_uJJTUyQ_Ztzi6mds';
+  var SUPABASE_STATE_KEY = '4b_command_center_state';
   var shifts = ['0700-1500','1500-1900','1900-0700','0630-1430','1430-1830','1830-2230','2230-0630','1500-2300','2300-0700'];
   var state = load();
+  var saveTimer = null;
+  var isCloudLoading = false;
 
   function today(){ return new Date().toISOString().slice(0,10); }
-  function esc(v){ return String(v == null ? '' : v).replace(/[&<>\"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]; }); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function id(){ return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+  function cleanState(input){
+    input = input || {};
+    return {
+      staff: Array.isArray(input.staff) ? input.staff : [],
+      assignments: Array.isArray(input.assignments) ? input.assignments : [],
+      charge: input.charge && typeof input.charge === 'object' && !Array.isArray(input.charge) ? input.charge : {}
+    };
+  }
+  function hasData(input){
+    input = cleanState(input);
+    return input.staff.length > 0 || input.assignments.length > 0 || Object.keys(input.charge).some(function(k){ return input.charge[k]; });
+  }
   function load(){
-    try { return Object.assign({staff:[], assignments:[], charge:{}}, JSON.parse(localStorage.getItem(KEY) || '{}')); }
+    try { return cleanState(JSON.parse(localStorage.getItem(KEY) || '{}')); }
     catch(e){ return {staff:[], assignments:[], charge:{}}; }
   }
-  function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+  function saveLocal(){ localStorage.setItem(KEY, JSON.stringify(cleanState(state))); }
+  function save(){ saveLocal(); if(!isCloudLoading) scheduleCloudSave(); }
   function msg(text){ var el=document.getElementById('message'); el.textContent=text; el.classList.add('show'); setTimeout(function(){el.classList.remove('show');}, 2600); }
   function dateValue(){ return document.getElementById('viewDate').value || today(); }
   function roleClass(type){ return type === 'Orient' ? 'orient' : type === 'Preceptor' ? 'preceptor' : type === 'Charge' ? 'charge' : ''; }
@@ -202,6 +283,76 @@
     var existing = state.staff.find(function(s){ return s.name.toLowerCase() === name.toLowerCase(); });
     if(existing){ if(role) existing.role = existing.role || role; return; }
     state.staff.push({id:id(), name:name, role:role || 'RN', shift:'Variable', fte:'', phone:'', email:'', notes:''});
+  }
+  function setCloudStatus(text, mode){
+    var el = document.getElementById('cloudStatus');
+    if(!el) return;
+    el.textContent = text;
+    el.className = 'cloud-status' + (mode ? ' ' + mode : '');
+  }
+  function supabaseRequest(path, options){
+    options = options || {};
+    var headers = Object.assign({
+      apikey: SUPABASE_KEY,
+      Authorization: 'Bearer ' + SUPABASE_KEY
+    }, options.headers || {});
+    return fetch(SUPABASE_URL + path, Object.assign({}, options, {headers: headers})).then(function(res){
+      return res.text().then(function(text){
+        var data = null;
+        if(text){ try { data = JSON.parse(text); } catch(e){ data = text; } }
+        if(!res.ok){ throw new Error((data && data.message) || text || res.statusText); }
+        return data;
+      });
+    });
+  }
+  async function loadFromSupabase(){
+    if(!window.fetch){ setCloudStatus('Supabase unavailable', 'bad'); return; }
+    setCloudStatus('Supabase syncing', 'busy');
+    try {
+      var rows = await supabaseRequest('/rest/v1/tracker_state?select=value,updated_at,updated_by&key=eq.' + encodeURIComponent(SUPABASE_STATE_KEY), {headers:{Accept:'application/json'}});
+      var localHasData = hasData(state);
+      if(rows && rows[0] && rows[0].value){
+        var cloud = typeof rows[0].value === 'string' ? JSON.parse(rows[0].value) : rows[0].value;
+        cloud = cleanState(cloud);
+        if(hasData(cloud) || !localHasData){
+          state = cloud;
+          isCloudLoading = true;
+          saveLocal();
+          isCloudLoading = false;
+          renderAll();
+          setCloudStatus('Supabase synced', 'ok');
+          return;
+        }
+      }
+      await saveToSupabase(false);
+    } catch(e) {
+      console.warn('Supabase load failed', e);
+      setCloudStatus('Supabase offline', 'bad');
+    }
+  }
+  async function saveToSupabase(showMessage){
+    if(!window.fetch){ setCloudStatus('Supabase unavailable', 'bad'); return; }
+    setCloudStatus('Saving to Supabase', 'busy');
+    try {
+      await supabaseRequest('/rest/v1/tracker_state?on_conflict=key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Prefer: 'resolution=merge-duplicates,return=representation'
+        },
+        body: JSON.stringify({key: SUPABASE_STATE_KEY, value: JSON.stringify(cleanState(state)), updated_by: '4b-command-center'})
+      });
+      setCloudStatus('Supabase saved', 'ok');
+      if(showMessage) msg('Saved to Supabase.');
+    } catch(e) {
+      console.warn('Supabase save failed', e);
+      setCloudStatus('Supabase save failed', 'bad');
+      if(showMessage) msg('Saved locally. Supabase did not update.');
+    }
+  }
+  function scheduleCloudSave(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){ saveToSupabase(false); }, 700);
   }
 
   window.showTab = function(tab){
@@ -214,7 +365,8 @@
     if(tab === 'tools') renderTools();
   };
 
-  window.saveNow = function(){ save(); msg('Saved locally.'); };
+  window.saveNow = async function(){ saveLocal(); await saveToSupabase(true); };
+  window.syncNow = async function(){ await loadFromSupabase(); msg('Supabase sync checked.'); };
 
   window.addAssignment = function(){
     var date = document.getElementById('boardDate').value || dateValue();
@@ -315,7 +467,7 @@
   };
 
   window.downloadBackup = function(){
-    var blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+    var blob = new Blob([JSON.stringify(cleanState(state), null, 2)], {type:'application/json'});
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = '4B_Command_Center_Backup_' + today() + '.json';
@@ -327,7 +479,7 @@
     if(!file) return;
     var reader = new FileReader();
     reader.onload = function(e){
-      try { state = Object.assign({staff:[], assignments:[], charge:{}}, JSON.parse(e.target.result)); save(); renderAll(); msg('Backup restored.'); }
+      try { state = cleanState(JSON.parse(e.target.result)); save(); renderAll(); msg('Backup restored.'); }
       catch(err){ alert('Could not read backup file.'); }
     };
     reader.readAsText(file);
@@ -335,7 +487,7 @@
   };
 
   window.clearAllData = function(){
-    if(!confirm('Clear all 4B Command Center data saved in this browser?')) return;
+    if(!confirm('Clear all 4B Command Center data saved in this browser and Supabase?')) return;
     state = {staff:[], assignments:[], charge:{}};
     save(); renderAll(); msg('All data cleared.');
   };
@@ -352,7 +504,7 @@
   };
   function csv(v){ return '"' + String(v == null ? '' : v).replace(/"/g,'""') + '"'; }
 
-  function renderAll(){ renderDatalists(); renderBoard(); renderCharge(); renderDirectory(); renderTools(); }
+  window.renderAll = function(){ renderDatalists(); renderBoard(); renderCharge(); renderDirectory(); renderTools(); };
 
   function renderDatalists(){
     document.getElementById('staffNames').innerHTML = state.staff.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(s){ return '<option value="' + esc(s.name) + '">'; }).join('');
@@ -412,7 +564,9 @@
   document.getElementById('viewDate').value = today();
   document.getElementById('boardDate').value = today();
   document.getElementById('chargeDate').value = today();
-  fillShiftSelect(); renderAll();
+  fillShiftSelect();
+  renderAll();
+  loadFromSupabase();
 })();
 </script>
 </body>
