@@ -1,542 +1,261 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>4B Command Center</title>
-  <style>
-    :root {
-      --bg: #07172f;
-      --bg-2: #0b2550;
-      --panel: rgba(16, 48, 102, .82);
-      --panel-2: rgba(22, 66, 138, .82);
-      --line: rgba(121, 171, 255, .32);
-      --line-strong: rgba(143, 193, 255, .58);
-      --text: #eaf3ff;
-      --muted: #9db7df;
-      --soft: #d8e7ff;
-      --navy: #0b2545;
-      --cyan: #2bd4ff;
-      --green: #18c99a;
-      --gold: #f4c542;
-      --pink: #ff7abf;
-      --purple: #8a7cff;
-      --red: #ff6b7a;
-      --shadow: 0 16px 42px rgba(0, 0, 0, .24);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      overflow-x: hidden;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-    body::before {
-      content: "";
-      position: fixed;
-      inset: -18%;
-      z-index: -2;
-      background:
-        radial-gradient(circle at 16% 12%, rgba(50, 170, 255, .52), transparent 24%),
-        radial-gradient(circle at 84% 14%, rgba(255, 122, 191, .34), transparent 22%),
-        radial-gradient(circle at 68% 82%, rgba(138, 124, 255, .42), transparent 25%),
-        linear-gradient(135deg, #061228 0%, #0d2b61 52%, #12214c 100%);
-      animation: animeDrift 18s ease-in-out infinite alternate;
-    }
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background:
-        linear-gradient(120deg, rgba(104, 175, 255, .14) 0 1px, transparent 1px 54px),
-        linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 34px),
-        radial-gradient(circle at 50% 18%, rgba(255,255,255,.28), transparent 2px),
-        radial-gradient(circle at 9% 62%, rgba(255,255,255,.22), transparent 2px);
-      opacity: .78;
-      animation: animeLines 14s linear infinite;
-    }
-    @keyframes animeDrift {
-      from { transform: translate3d(-1.5%, -1%, 0) scale(1); filter: saturate(1.05); }
-      to { transform: translate3d(1.5%, 1%, 0) scale(1.04); filter: saturate(1.2); }
-    }
-    @keyframes animeLines {
-      from { background-position: 0 0, 0 0, 0 0, 0 0; }
-      to { background-position: 90px 60px, 0 34px, 24px 38px, -18px 52px; }
-    }
-    header, nav, main { position: relative; z-index: 1; }
-    header {
-      padding: 12px 16px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      background: linear-gradient(90deg, rgba(5, 18, 41, .94), rgba(13, 43, 97, .86));
-      border-bottom: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-    }
-    .brand h1 { margin: 0; font-size: 22px; letter-spacing: .2px; }
-    .brand p { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
-    .top-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .cloud-status { border: 1px solid rgba(255,255,255,.24); border-radius: 999px; color: #dceaff; padding: 7px 10px; font-size: 12px; font-weight: 800; background: rgba(255,255,255,.08); }
-    .cloud-status.ok { color: #a7f3d0; border-color: rgba(24, 201, 154, .55); }
-    .cloud-status.busy { color: #fff4cf; border-color: rgba(244, 197, 66, .7); }
-    .cloud-status.bad { color: #ffd5d2; border-color: rgba(255, 107, 122, .72); }
-    button, input, select, textarea { font: inherit; }
-    button { border: 0; background: linear-gradient(135deg, #20c997, #13b6e8); color: #04152e; padding: 8px 11px; border-radius: 7px; cursor: pointer; font-weight: 800; box-shadow: 0 8px 20px rgba(0,0,0,.16); }
-    button.secondary { background: rgba(35, 79, 151, .72); color: var(--text); border: 1px solid var(--line); box-shadow: none; }
-    button.danger { background: rgba(255, 107, 122, .92); color: #fff; }
-    button.small { padding: 5px 8px; font-size: 12px; }
-    nav { display: flex; gap: 6px; padding: 10px 12px 0; overflow-x: auto; }
-    .tab { background: rgba(18, 54, 113, .72); color: #cfe0ff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; min-width: max-content; box-shadow: none; }
-    .tab.active { background: linear-gradient(135deg, rgba(45, 122, 235, .9), rgba(43, 212, 255, .55)); color: #fff; border-color: var(--line-strong); }
-    main { padding: 12px; }
-    h2 { margin: 0 0 10px; color: var(--text); font-size: 18px; }
-    h3 { margin: 16px 0 8px; color: var(--text); font-size: 15px; }
-    label { display: block; font-size: 11px; color: var(--muted); font-weight: 800; margin-bottom: 8px; letter-spacing: .04em; text-transform: uppercase; }
-    input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 7px; padding: 9px 10px; background: rgba(8, 30, 67, .76); color: var(--text); outline: none; }
-    input::placeholder, textarea::placeholder { color: #7f9bc5; }
-    textarea { min-height: 72px; resize: vertical; }
-    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; box-shadow: var(--shadow); backdrop-filter: blur(14px); }
-    .grid { display: grid; gap: 12px; }
-    .two { grid-template-columns: minmax(280px, 390px) minmax(0, 1fr); }
-    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
-    .full { grid-column: 1 / -1; }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
-    .toolbar { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
-    .muted { color: var(--muted); font-size: 12px; }
-    .hidden { display: none; }
-    .message { display: none; margin-bottom: 10px; border-radius: 7px; padding: 9px 11px; background: rgba(24, 201, 154, .14); color: #b9ffe9; border: 1px solid rgba(24, 201, 154, .42); }
-    .message.show { display: block; }
-
-    .board-shell { display: grid; gap: 12px; }
-    .board-controls { background: linear-gradient(180deg, rgba(16, 56, 122, .86), rgba(12, 38, 83, .86)); }
-    .control-grid { display: grid; grid-template-columns: 160px 160px 190px 1fr 130px 170px 160px; gap: 10px; align-items: end; }
-    .control-grid button { min-height: 38px; }
-    .board-title-row { display: flex; justify-content: space-between; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-    .board-title-row h2 { margin-bottom: 2px; }
-    .board-title-row .date-pill { border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; color: #dceaff; background: rgba(255,255,255,.08); font-size: 12px; font-weight: 800; }
-    .metric-row { display: grid; grid-template-columns: repeat(5, minmax(100px, 1fr)); gap: 8px; }
-    .metric { background: rgba(30, 86, 172, .38); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
-    .metric strong { display: block; color: #fff; font-size: 22px; }
-    .metric span { color: var(--muted); font-size: 12px; font-weight: 800; }
-    .board-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(305px, 1fr)); gap: 14px; align-items: start; }
-    .shift-card { min-height: 126px; overflow: hidden; border: 1px solid rgba(123, 180, 255, .46); border-radius: 8px; background: linear-gradient(180deg, rgba(38, 98, 202, .72), rgba(23, 67, 145, .68)); box-shadow: 0 12px 28px rgba(0,0,0,.18); }
-    .shift-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: #f2f7ff; font-weight: 900; padding: 10px 12px; border-bottom: 1px solid rgba(160, 204, 255, .28); background: rgba(63, 126, 232, .42); }
-    .count-badge { min-width: 25px; text-align: center; padding: 3px 8px; border-radius: 8px; background: rgba(43, 212, 255, .24); border: 1px solid rgba(43, 212, 255, .44); color: #bff4ff; font-size: 12px; }
-    .staff-list { padding: 8px; display: grid; gap: 7px; }
-    .staff-chip { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 8px; border-radius: 7px; background: rgba(7, 23, 55, .28); border: 1px solid rgba(159, 204, 255, .18); }
-    .staff-name { color: #fff; font-weight: 900; font-size: 13px; overflow-wrap: anywhere; }
-    .pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
-    .pill { display: inline-flex; align-items: center; gap: 3px; border-radius: 999px; padding: 2px 7px; font-size: 10px; font-weight: 900; border: 1px solid rgba(255,255,255,.22); color: #eaf3ff; background: rgba(255,255,255,.1); }
-    .pill.time { color: #aef5ff; border-color: rgba(43, 212, 255, .38); background: rgba(43, 212, 255, .12); }
-    .pill.role-rn { color: #d9e7ff; background: rgba(138, 124, 255, .2); }
-    .pill.role-lpn { color: #ffe7b0; background: rgba(244, 197, 66, .18); }
-    .pill.role-ca { color: #b9ffe9; background: rgba(24, 201, 154, .16); }
-    .pill.role-uc { color: #ffd8f0; background: rgba(255, 122, 191, .18); }
-    .pill.charge { color: #ffe7a0; background: rgba(244, 197, 66, .2); border-color: rgba(244, 197, 66, .42); }
-    .pill.orient { color: #b8f7ff; background: rgba(43, 212, 255, .16); }
-    .pill.preceptor { color: #e2d7ff; background: rgba(138, 124, 255, .22); }
-    .pill.agency, .pill.float, .pill.sitter { color: #ffd8f0; background: rgba(255, 122, 191, .18); }
-    .pill.note { color: #dceaff; background: rgba(255,255,255,.09); }
-    .remove-dot { width: 26px; height: 26px; padding: 0; border-radius: 999px; background: transparent; color: #ff9ecf; box-shadow: none; font-size: 18px; line-height: 24px; }
-    .empty-staff { color: #9db7df; font-size: 12px; padding: 9px; border: 1px dashed rgba(159, 204, 255, .25); border-radius: 7px; }
-
-    .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { border-bottom: 1px solid rgba(121, 171, 255, .22); text-align: left; padding: 8px; vertical-align: top; }
-    th { color: #dceaff; background: rgba(30, 86, 172, .34); font-size: 12px; }
-    td { color: var(--soft); }
-    .shift-card select { background: rgba(8, 30, 67, .68); }
-
-    @media (max-width: 1060px) {
-      .control-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    }
-    @media (max-width: 820px) {
-      header { align-items: flex-start; }
-      .top-actions { width: 100%; }
-      .top-actions button { flex: 1 1 auto; }
-      .cloud-status { flex: 1 0 100%; text-align: center; }
-      .two { grid-template-columns: 1fr; }
-      .metric-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .form-grid, .control-grid { grid-template-columns: 1fr; }
-      main { padding: 10px; }
-      .board-grid { grid-template-columns: 1fr; }
-    }
-    @media print {
-      header, nav, .top-actions, .no-print, button { display: none !important; }
-      body { background: #fff; color: #000; }
-      body::before, body::after { display: none; }
-      main { padding: 0; }
-      .panel, .shift-card { box-shadow: none; background: #fff; border-color: #999; color: #000; }
-      .shift-head, .staff-chip, .metric { background: #fff; color: #000; }
-      .hidden { display: none !important; }
-      .tab-page:not(.active-print) { display: none !important; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4B Staff Command Center</title>
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy2: #0f2040;
+    --blue: #1a4480;
+    --accent: #2e7dd1;
+    --accent2: #4fa3e8;
+    --green: #1a7a4a;
+    --green2: #25a868;
+    --red: #b32318;
+    --red2: #e63946;
+    --amber: #b45309;
+    --amber2: #f59e0b;
+    --purple: #5b21b6;
+    --purple2: #8b5cf6;
+    --teal: #0e7490;
+    --teal2: #06b6d4;
+    --slate: #1e293b;
+    --slate2: #334155;
+    --slate3: #475569;
+    --border: #2a3f5f;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --white: #f8fafc;
+    --card: #0d1f38;
+    --card2: #112240;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, Helvetica, sans-serif; background: var(--navy); color: var(--text); min-height: 100vh; font-size: 13px; }
+  button, input, select, textarea { font: inherit; }
+  button { border: 0; cursor: pointer; }
+  input, select, textarea { background: var(--slate); border: 1px solid var(--border); color: var(--white); border-radius: 5px; padding: 7px 9px; outline: none; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent2); box-shadow: 0 0 0 2px rgba(79,163,232,.18); }
+  textarea { width: 100%; min-height: 92px; resize: vertical; }
+  header { background: linear-gradient(135deg, var(--navy2) 0%, #0a1e3d 100%); border-bottom: 2px solid var(--accent); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,.5); }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .header-badge { background: var(--accent); color: #fff; font-weight: 800; font-size: 18px; padding: 6px 12px; border-radius: 6px; letter-spacing: 1px; }
+  .header-title { font-size: 15px; font-weight: 700; color: var(--white); }
+  .header-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+  #live-clock, #cloudStatus { font-size: 12px; color: var(--accent2); background: rgba(46,125,209,.1); padding: 5px 10px; border-radius: 4px; border: 1px solid rgba(46,125,209,.3); }
+  #cloudStatus.ok { color: var(--green2); border-color: rgba(37,168,104,.35); background: rgba(26,122,74,.15); }
+  #cloudStatus.bad { color: var(--red2); border-color: rgba(230,57,70,.35); background: rgba(179,35,24,.15); }
+  #cloudStatus.busy { color: var(--amber2); border-color: rgba(245,158,11,.35); background: rgba(180,83,9,.15); }
+  .btn { padding: 6px 12px; border-radius: 5px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; transition: all .15s; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent2); }
+  .btn-success { background: var(--green); color: #fff; }
+  .btn-success:hover { background: var(--green2); }
+  .btn-danger { background: var(--red); color: #fff; }
+  .btn-danger:hover { background: var(--red2); }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text2); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent2); }
+  .btn-sm { padding: 4px 8px; font-size: 11px; }
+  #census-bar { background: var(--card); border-bottom: 1px solid var(--border); padding: 8px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .census-label { font-size: 11px; color: var(--text2); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+  .census-group { display: flex; align-items: center; gap: 8px; }
+  .census-input { width: 56px; text-align: center; font-size: 15px; font-weight: 700; padding: 4px 6px; }
+  .ratio-display { display: flex; gap: 10px; flex-wrap: wrap; }
+  .ratio-chip { background: rgba(46,125,209,.12); border: 1px solid rgba(46,125,209,.3); border-radius: 20px; padding: 3px 10px; font-size: 11px; color: var(--accent2); }
+  .ratio-chip.warn { background: rgba(180,83,9,.15); border-color: rgba(245,158,11,.4); color: var(--amber2); }
+  .census-divider { width: 1px; height: 28px; background: var(--border); }
+  #tabs { background: var(--card); border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; padding: 0 20px; }
+  .tab { padding: 10px 18px; font-size: 12px; font-weight: 700; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; letter-spacing: .3px; text-transform: uppercase; }
+  .tab:hover { color: var(--text2); }
+  .tab.active { color: var(--accent2); border-bottom-color: var(--accent2); }
+  .tab-icon { margin-right: 5px; }
+  main { padding: 16px 20px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .section-title { font-size: 14px; font-weight: 800; color: var(--white); letter-spacing: .5px; }
+  .section-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .card-title { font-size: 12px; font-weight: 800; color: var(--accent2); text-transform: uppercase; letter-spacing: .5px; }
+  .date-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+  .date-tab { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--card2); color: var(--text2); font-weight: 700; }
+  .date-tab.active { background: var(--accent); color: #fff; border-color: var(--accent2); }
+  .date-input { width: 150px; padding: 5px 9px; }
+  .add-form { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; gap: 10px; align-items: end; flex-wrap: wrap; margin-bottom: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; font-weight: 800; }
+  .form-input, .form-select { min-width: 90px; }
+  .shift-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+  .shift-block { background: var(--card2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; min-height: 90px; }
+  .shift-block-header { background: rgba(46,125,209,.14); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .shift-time { font-weight: 800; color: var(--white); font-size: 12px; }
+  .shift-count { background: var(--accent); color: #fff; min-width: 22px; text-align: center; padding: 2px 7px; border-radius: 10px; font-size: 11px; font-weight: 800; }
+  .shift-body { padding: 8px 12px; }
+  .staff-row { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+  .staff-row:last-child { border-bottom: none; }
+  .staff-name { font-size: 12px; color: var(--text); font-weight: 700; }
+  .empty-shift { padding: 8px 0; color: var(--text3); font-size: 12px; font-style: italic; }
+  .staff-actions { display: flex; gap: 4px; }
+  .move-btn { width: 22px; height: 22px; border-radius: 4px; background: transparent; color: var(--text3); font-size: 12px; }
+  .remove-btn:hover { color: var(--red2); background: rgba(230,57,70,.1); }
+  .tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; }
+  .tag-rn { background: rgba(46,125,209,.22); color: var(--accent2); }
+  .tag-lpn { background: rgba(91,33,182,.22); color: var(--purple2); }
+  .tag-ca { background: rgba(14,116,144,.22); color: var(--teal2); }
+  .tag-uc { background: rgba(245,158,11,.18); color: var(--amber2); }
+  .charge-badge { background: rgba(245,158,11,.22); color: var(--amber2); font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(245,158,11,.3); }
+  .detail-badge { background: rgba(79,163,232,.16); color: var(--accent2); font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(79,163,232,.26); }
+  .charge-row { display: grid; grid-template-columns: 90px 1fr; gap: 6px; align-items: center; background: var(--card); border: 1px solid var(--border); border-radius: 7px; padding: 8px; margin-bottom: 7px; }
+  .charge-shift-label { font-size: 11px; font-weight: 800; color: var(--white); }
+  .charge-select { width: 100%; }
+  .charge-indicator { display: inline-block; margin-top: 5px; font-size: 10px; color: var(--amber2); }
+  .dir-subtabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .dir-subtab { padding: 6px 12px; border: 1px solid var(--border); border-radius: 20px; color: var(--text2); background: var(--card2); font-size: 11px; font-weight: 800; cursor: pointer; }
+  .dir-subtab.active { color: #fff; border-color: var(--accent2); background: rgba(46,125,209,.35); }
+  .add-employee-bar { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 8px 9px; border-bottom: 1px solid var(--border); text-align: left; font-size: 12px; vertical-align: middle; }
+  th { color: var(--text2); font-size: 10px; text-transform: uppercase; letter-spacing: .6px; background: var(--card2); }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+  .inline-input, .inline-select { width: 100%; min-width: 92px; padding: 4px 6px; font-size: 11px; }
+  .check-cell { text-align: center; }
+  .upload-zone { border: 2px dashed var(--border); border-radius: 10px; padding: 36px; text-align: center; background: var(--card); margin-bottom: 14px; cursor: pointer; }
+  .upload-zone:hover { border-color: var(--accent); }
+  .upload-icon { font-size: 28px; margin-bottom: 8px; }
+  .upload-text { font-weight: 800; color: var(--white); }
+  .upload-sub { color: var(--text3); font-size: 11px; margin-top: 4px; }
+  .paste-area { background: var(--slate); border: 1px solid var(--border); color: var(--white); min-height: 132px; }
+  .flex-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .mt-10 { margin-top: 10px; }
+  .mb-10 { margin-bottom: 10px; }
+  .hidden { display: none !important; }
+  @media (max-width: 760px) { header { align-items: flex-start; flex-direction: column; } .header-right { justify-content: flex-start; } .charge-row { grid-template-columns: 1fr; } main { padding: 12px; } }
+  @media print { header, #census-bar, #tabs, .add-form, .date-input, .btn, .dir-subtabs, .add-employee-bar, .section-header, .tools-only { display:none !important; } body { background:#fff; color:#000; } main { padding:0; } .tab-panel { display:none !important; } .tab-panel.active { display:block !important; } .shift-block, .card, .table-wrap { border-color:#999; background:#fff; color:#000; } .shift-block-header, th { background:#eee; color:#000; } .staff-name, .shift-time { color:#000; } }
+</style>
 </head>
 <body>
 <header>
-  <div class="brand">
-    <h1>4B Command Center</h1>
-    <p>Board, charge assignments, staff directory, and tools</p>
+  <div class="header-left">
+    <div class="header-badge">4B</div>
+    <div><div class="header-title">4B Staff Command Center</div><div class="header-sub">AOMC Nursing Operations · UKG Integration</div></div>
   </div>
-  <div class="top-actions no-print">
-    <span id="cloudStatus" class="cloud-status busy">Supabase starting</span>
-    <button class="secondary" onclick="window.print()">Print</button>
-    <button class="secondary" onclick="exportStaffingCsv()">Export CSV</button>
-    <button class="secondary" onclick="syncNow()">Sync Supabase</button>
-    <button onclick="saveNow()">Save</button>
+  <div class="header-right">
+    <div id="cloudStatus" class="busy">Supabase starting</div>
+    <div id="live-clock"></div>
+    <button class="btn btn-ghost btn-sm" onclick="window.print()">Print</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV()">CSV</button>
   </div>
 </header>
-<nav class="no-print" aria-label="Main pages">
-  <button class="tab active" data-tab="board" onclick="showTab('board')">Board</button>
-  <button class="tab" data-tab="charge" onclick="showTab('charge')">Charge</button>
-  <button class="tab" data-tab="directory" onclick="showTab('directory')">Directory</button>
-  <button class="tab" data-tab="tools" onclick="showTab('tools')">Tools</button>
-</nav>
+<div id="census-bar">
+  <span class="census-label">Census</span>
+  <div class="census-group"><span style="font-size:11px;color:var(--text2);">Day</span><input type="number" class="census-input" id="census-day" min="0" max="40" value="0" oninput="updateRatios()"><span style="font-size:11px;color:var(--text2);">Eve</span><input type="number" class="census-input" id="census-eve" min="0" max="40" value="0" oninput="updateRatios()"><span style="font-size:11px;color:var(--text2);">Night</span><input type="number" class="census-input" id="census-night" min="0" max="40" value="0" oninput="updateRatios()"></div>
+  <div class="census-divider"></div><span class="census-label">Ratios</span><div class="ratio-display" id="ratio-display"><span class="ratio-chip">Enter census above</span></div>
+</div>
+<div id="tabs">
+  <div class="tab active" data-panel="board" onclick="switchTab(this)"><span class="tab-icon">BOARD</span></div>
+  <div class="tab" data-panel="charge" onclick="switchTab(this)"><span class="tab-icon">CHARGE</span></div>
+  <div class="tab" data-panel="directory" onclick="switchTab(this)"><span class="tab-icon">DIRECTORY</span></div>
+  <div class="tab" data-panel="tools" onclick="switchTab(this)"><span class="tab-icon">TOOLS</span></div>
+</div>
 <main>
-  <div id="message" class="message"></div>
-
-  <section id="page-board" class="tab-page active-print">
-    <div class="board-shell">
-      <div class="panel board-controls no-print">
-        <div class="control-grid">
-          <label>View Date<input id="viewDate" type="date" onchange="renderAll()"></label>
-          <label>Filter Role<select id="boardRoleFilter" onchange="renderBoard()"><option value="">All Roles</option><option>RN</option><option>LPN</option><option>CA</option><option>UC</option></select></label>
-          <label>Filter Shift<select id="boardShiftFilter" onchange="renderBoard()"></select></label>
-          <label>Staff Name<input id="assignName" list="staffNames" placeholder="Last, First"></label>
-          <label>Role<select id="assignRole"><option>RN</option><option>LPN</option><option>CA</option><option>UC</option></select></label>
-          <label>Shift<select id="assignShift"></select></label>
-          <label>Assignment<select id="assignType"><option>Staff</option><option>Agency</option><option>Orient</option><option>Preceptor</option><option>Float</option><option>Sitter</option></select></label>
-          <label class="full">Notes<input id="assignNotes" placeholder="Optional note, count, or assignment detail"></label>
-          <button onclick="addAssignment()">+ Add Staff</button>
-          <button class="secondary" onclick="clearBoardForDate()">Clear Date</button>
-        </div>
-      </div>
-      <div class="board-title-row">
-        <div><h2>4B Staffing Board</h2><div class="muted" id="boardSubtitle"></div></div>
-        <div class="date-pill" id="boardDatePill"></div>
-      </div>
-      <div class="metric-row" id="boardMetrics"></div>
-      <div id="boardView" class="board-grid"></div>
-    </div>
-  </section>
-
-  <section id="page-charge" class="tab-page hidden">
-    <div class="panel">
-      <div class="toolbar"><div><h2>Charge Assignments</h2><div class="muted">Assign one 4B charge nurse per shift.</div></div><label class="no-print" style="max-width:190px">Date<input id="chargeDate" type="date" onchange="renderCharge()"></label></div>
-      <div id="chargeView"></div>
-    </div>
-  </section>
-
-  <section id="page-directory" class="tab-page hidden">
-    <div class="grid two">
-      <div class="panel no-print">
-        <h2>Add Staff</h2>
-        <div class="form-grid">
-          <label>Name<input id="staffName" placeholder="Last, First"></label>
-          <label>Role<select id="staffRole"><option>RN</option><option>LPN</option><option>CA</option><option>UC</option><option>Other</option></select></label>
-          <label>Home Shift<select id="staffShift"><option>Day</option><option>Evening</option><option>Night</option><option>Variable</option></select></label>
-          <label>FTE<input id="staffFte" placeholder="1.0"></label>
-          <label>Phone<input id="staffPhone" placeholder="Optional"></label>
-          <label>Email<input id="staffEmail" placeholder="Optional"></label>
-          <label class="full">Notes<textarea id="staffNotes" placeholder="Skills, preceptor status, schedule notes"></textarea></label>
-        </div>
-        <div class="actions"><button onclick="addStaff()">Save Staff</button><button class="secondary" onclick="clearStaffForm()">New Blank</button></div>
-      </div>
-      <div class="panel">
-        <div class="toolbar"><h2>Staff Directory</h2><input class="no-print" id="directorySearch" style="max-width:260px" placeholder="Search staff" oninput="renderDirectory()"></div>
-        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Shift</th><th>Contact</th><th>Notes</th><th class="no-print">Actions</th></tr></thead><tbody id="directoryRows"></tbody></table></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="page-tools" class="tab-page hidden">
-    <div class="grid two">
-      <div class="panel">
-        <h2>Import Staffing</h2>
-        <p class="muted">Paste rows copied from Excel/UKG. Best format: Date, Name, Role, Shift. The parser also accepts tab-separated rows.</p>
-        <textarea id="pasteRows" placeholder="2026-09-29, Smith Jane, RN, 0700-1500"></textarea>
-        <div class="actions"><button onclick="importPastedRows()">Import Rows</button><button class="secondary" onclick="document.getElementById('pasteRows').value=''">Clear</button></div>
-      </div>
-      <div class="panel">
-        <h2>Backup</h2>
-        <p class="muted">Use backups before changing computers or clearing browser data.</p>
-        <div class="actions"><button onclick="downloadBackup()">Download Backup</button><button class="secondary" onclick="document.getElementById('backupFile').click()">Restore Backup</button><button class="danger" onclick="clearAllData()">Clear All</button></div>
-        <input id="backupFile" type="file" accept=".json,application/json" class="hidden" onchange="restoreBackup(event)">
-        <h3>Current Data</h3>
-        <div class="metric-row" id="toolMetrics"></div>
-      </div>
-    </div>
-  </section>
-
-  <datalist id="staffNames"></datalist>
+<div class="tab-panel active" id="panel-board">
+  <div class="date-tabs"><button class="date-tab active" id="active-date-label" onclick="document.getElementById('view-date').showPicker && document.getElementById('view-date').showPicker()"></button><input class="date-input" id="view-date" type="date" onchange="renderAll()"></div>
+  <div class="add-form">
+    <div class="form-group"><label class="form-label">Name</label><input list="staff-datalist" class="form-input" id="add-name" placeholder="Last, First" style="width:180px;"><datalist id="staff-datalist"></datalist></div>
+    <div class="form-group"><label class="form-label">Role</label><select class="form-select" id="add-role"><option>RN</option><option>LPN</option><option>CA</option><option>UC</option></select></div>
+    <div class="form-group"><label class="form-label">Shift</label><select class="form-select" id="add-shift"></select></div>
+    <div class="form-group"><label class="form-label">Tag</label><select class="form-select" id="add-type"><option>Staff</option><option>Agency</option><option>Orient</option><option>Preceptor</option><option>Float</option><option>Sitter</option></select></div>
+    <button class="btn btn-success" onclick="addStaffManual()">+ Add Staff</button>
+  </div>
+  <div id="board-view"></div>
+</div>
+<div class="tab-panel" id="panel-charge">
+  <div class="section-header"><div><div class="section-title">Charge Nurse Assignments</div><div class="section-sub">Assign 4B charge nurses per shift per day</div></div></div>
+  <div id="charge-assignments"></div>
+</div>
+<div class="tab-panel" id="panel-directory">
+  <div class="section-header"><div><div class="section-title">Staff Directory</div><div class="section-sub">All 4B staff · Original-style staffing table</div></div><input type="text" id="dir-search" placeholder="Search name..." oninput="renderDirectory()"></div>
+  <div class="dir-subtabs"><div class="dir-subtab active" data-role="ALL" onclick="setDirTab(this)">All Roles</div><div class="dir-subtab" data-role="RN" onclick="setDirTab(this)">RN</div><div class="dir-subtab" data-role="LPN" onclick="setDirTab(this)">LPN</div><div class="dir-subtab" data-role="CA" onclick="setDirTab(this)">CA</div><div class="dir-subtab" data-role="UC" onclick="setDirTab(this)">UC</div></div>
+  <div class="add-employee-bar"><div style="font-size:12px;font-weight:800;color:var(--white);margin-bottom:10px;">Add New Employee</div><div class="flex-row"><div class="form-group"><label class="form-label">Last, First Name</label><input type="text" class="form-input" id="new-emp-name" placeholder="Smith, Jane A" style="width:210px;"></div><div class="form-group"><label class="form-label">Role</label><select class="form-select" id="new-emp-role"><option>RN</option><option>LPN</option><option>CA</option><option>UC</option></select></div><button class="btn btn-success" onclick="addEmployee()">+ Add Employee</button></div></div>
+  <div class="add-employee-bar"><div style="font-size:12px;font-weight:800;color:var(--white);margin-bottom:6px;">Change Staff Name</div><div style="font-size:11px;color:var(--text2);margin-bottom:10px;">Use when an employee changes their last name. Existing board rows and records are retained under the new name.</div><div class="flex-row"><div class="form-group"><label class="form-label">Current Name</label><input list="staff-datalist" id="rename-current" placeholder="Current Last, First" style="width:220px;"></div><div class="form-group"><label class="form-label">New Name</label><input id="rename-new" placeholder="New Last, First" style="width:220px;"></div><button class="btn btn-primary" onclick="renameStaff()">Update Name</button></div></div>
+  <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Shift</th><th>FTE</th><th>48hr</th><th>Orient</th><th>Charge</th><th>DBL/MAT</th><th>Agency</th><th>Birthday</th><th>Hire Date</th><th>Phone</th><th>Email</th><th></th></tr></thead><tbody id="dir-tbody"></tbody></table></div>
+</div>
+<div class="tab-panel" id="panel-tools">
+  <div class="section-header"><div><div class="section-title">Tools</div><div class="section-sub">Supabase sync, UKG import, and backup files</div></div></div>
+  <div class="card"><div class="card-header"><span class="card-title">Supabase Live Sync</span></div><p style="font-size:12px;color:var(--text2);line-height:1.6;">Real-time shared state for the 4B command center. Uses the existing 4B Supabase tracker row.</p><div class="mt-10 flex-row"><button class="btn btn-primary" onclick="syncNow()">Sync Now</button><button class="btn btn-success" onclick="saveNow()">Save Now</button><span id="tools-sync-status" style="font-size:11px;color:var(--text3);"></span></div></div>
+  <div class="upload-zone" onclick="document.getElementById('file-input').click()"><div class="upload-icon">UKG</div><div class="upload-text">Drop UKG Excel file here or click to browse</div><div class="upload-sub">Paste text import is active in this web version</div></div><input type="file" id="file-input" accept=".xlsx,.xls,.csv" class="hidden">
+  <div class="card mb-10"><div class="card-header"><span class="card-title">Or Paste Text Data</span></div><textarea class="paste-area" id="paste-area" placeholder="Paste UKG tab-separated data here..."></textarea><div class="mt-10 flex-row"><button class="btn btn-primary" onclick="parsePastedData()">Parse Pasted Data</button><button class="btn btn-ghost" onclick="document.getElementById('paste-area').value=''">Clear</button></div></div>
+  <div class="card"><div class="card-header"><span class="card-title">Parser Info</span></div><p style="font-size:11px;color:var(--text2);line-height:1.6;">Parser rule: UKG Day/Eve1/Eve2/Night grid is read directly and keeps actual staff/shift badges when rows are formatted consistently.<br>RN/LPN 07:00 in Day = 0700-1500 · RN/LPN 19:00 in Eve2/Night = 1900-0700.</p></div>
+  <div class="card"><div class="card-header"><span class="card-title">Backup</span></div><div class="flex-row"><button class="btn btn-ghost" onclick="downloadBackup()">Download Backup</button><button class="btn btn-ghost" onclick="document.getElementById('backup-file').click()">Restore Backup</button><button class="btn btn-danger" onclick="clearAllData()">Clear All</button><input type="file" id="backup-file" class="hidden" accept="application/json,.json" onchange="restoreBackup(event)"></div></div>
+</div>
 </main>
 <script>
 (function(){
-  'use strict';
-  var KEY = 'aomc-4b-command-center-v1';
-  var SUPABASE_URL = 'https://xnsdvdfceflmagfhpycw.supabase.co';
-  var SUPABASE_KEY = 'sb_publishable_X3VPp9di5Ve-fw_uJJTUyQ_Ztzi6mds';
-  var SUPABASE_STATE_KEY = '4b_command_center_state';
-  var roles = ['RN','LPN','CA','UC'];
-  var shifts = ['0700-1500','1500-1900','1900-0700','0630-1430','1430-1830','1830-2230','2230-0630','1500-2300','2300-0700'];
-  var state = load();
-  var saveTimer = null;
-  var isCloudLoading = false;
-
-  function today(){ var d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
-  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ if(c === '&') return '&amp;'; if(c === '<') return '&lt;'; if(c === '>') return '&gt;'; if(c === '"') return '&quot;'; return '&#39;'; }); }
-  function js(v){ return String(v == null ? '' : v).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
-  function id(){ return Date.now().toString(36) + Math.random().toString(36).slice(2); }
-  function cleanState(input){
-    input = input || {};
-    return {staff: Array.isArray(input.staff) ? input.staff : [], assignments: Array.isArray(input.assignments) ? input.assignments : [], charge: input.charge && typeof input.charge === 'object' && !Array.isArray(input.charge) ? input.charge : {}};
-  }
-  function hasData(input){ input = cleanState(input); return input.staff.length > 0 || input.assignments.length > 0 || Object.keys(input.charge).some(function(k){ return input.charge[k]; }); }
-  function load(){ try { return cleanState(JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e){ return {staff:[], assignments:[], charge:{}}; } }
-  function saveLocal(){ localStorage.setItem(KEY, JSON.stringify(cleanState(state))); }
-  function save(){ saveLocal(); if(!isCloudLoading) scheduleCloudSave(); }
-  function msg(text){ var el=document.getElementById('message'); el.textContent=text; el.classList.add('show'); setTimeout(function(){el.classList.remove('show');}, 2600); }
-  function dateValue(){ return document.getElementById('viewDate').value || today(); }
-  function normalizeName(name){ return String(name || '').replace(/\s+/g,' ').trim(); }
-  function className(v){ return String(v || '').toLowerCase().replace(/[^a-z0-9]+/g,'-'); }
-  function upsertStaff(name, role){
-    name = normalizeName(name);
-    if(!name) return;
-    var existing = state.staff.find(function(s){ return s.name.toLowerCase() === name.toLowerCase(); });
-    if(existing){ if(role) existing.role = existing.role || role; return; }
-    state.staff.push({id:id(), name:name, role:role || 'RN', shift:'Variable', fte:'', phone:'', email:'', notes:''});
-  }
-  function setCloudStatus(text, mode){ var el = document.getElementById('cloudStatus'); if(!el) return; el.textContent = text; el.className = 'cloud-status' + (mode ? ' ' + mode : ''); }
-  function supabaseRequest(path, options){
-    options = options || {};
-    var headers = Object.assign({apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY}, options.headers || {});
-    return fetch(SUPABASE_URL + path, Object.assign({}, options, {headers: headers})).then(function(res){
-      return res.text().then(function(text){
-        var data = null;
-        if(text){ try { data = JSON.parse(text); } catch(e){ data = text; } }
-        if(!res.ok){ throw new Error((data && data.message) || text || res.statusText); }
-        return data;
-      });
-    });
-  }
-  async function loadFromSupabase(){
-    if(!window.fetch){ setCloudStatus('Supabase unavailable', 'bad'); return; }
-    setCloudStatus('Supabase syncing', 'busy');
-    try {
-      var rows = await supabaseRequest('/rest/v1/tracker_state?select=value,updated_at,updated_by&key=eq.' + encodeURIComponent(SUPABASE_STATE_KEY), {headers:{Accept:'application/json'}});
-      var localHasData = hasData(state);
-      if(rows && rows[0] && rows[0].value){
-        var cloud = typeof rows[0].value === 'string' ? JSON.parse(rows[0].value) : rows[0].value;
-        cloud = cleanState(cloud);
-        if(hasData(cloud) || !localHasData){ state = cloud; isCloudLoading = true; saveLocal(); isCloudLoading = false; renderAll(); setCloudStatus('Supabase synced', 'ok'); return; }
-      }
-      await saveToSupabase(false);
-    } catch(e) { console.warn('Supabase load failed', e); setCloudStatus('Supabase offline', 'bad'); }
-  }
-  async function saveToSupabase(showMessage){
-    if(!window.fetch){ setCloudStatus('Supabase unavailable', 'bad'); return; }
-    setCloudStatus('Saving to Supabase', 'busy');
-    try {
-      await supabaseRequest('/rest/v1/tracker_state?on_conflict=key', {method: 'POST', headers: {'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=representation'}, body: JSON.stringify({key: SUPABASE_STATE_KEY, value: JSON.stringify(cleanState(state)), updated_by: '4b-command-center'})});
-      setCloudStatus('Supabase saved', 'ok');
-      if(showMessage) msg('Saved to Supabase.');
-    } catch(e) { console.warn('Supabase save failed', e); setCloudStatus('Supabase save failed', 'bad'); if(showMessage) msg('Saved locally. Supabase did not update.'); }
-  }
-  function scheduleCloudSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(function(){ saveToSupabase(false); }, 700); }
-
-  function showTab(tab){
-    document.querySelectorAll('.tab').forEach(function(b){ b.classList.toggle('active', b.dataset.tab === tab); });
-    document.querySelectorAll('.tab-page').forEach(function(p){ p.classList.add('hidden'); p.classList.remove('active-print'); });
-    var page = document.getElementById('page-' + tab);
-    if(page){ page.classList.remove('hidden'); page.classList.add('active-print'); }
-    if(tab === 'charge') renderCharge();
-    if(tab === 'directory') renderDirectory();
-    if(tab === 'tools') renderTools();
-  }
-  async function saveNow(){ saveLocal(); await saveToSupabase(true); }
-  async function syncNow(){ await loadFromSupabase(); msg('Supabase sync checked.'); }
-  function addAssignment(){
-    var date = dateValue();
-    var name = normalizeName(document.getElementById('assignName').value);
-    var role = document.getElementById('assignRole').value;
-    var shift = document.getElementById('assignShift').value;
-    var type = document.getElementById('assignType').value;
-    var notes = document.getElementById('assignNotes').value.trim();
-    if(!name){ alert('Enter a staff name.'); return; }
-    upsertStaff(name, role);
-    state.assignments.push({id:id(), date:date, name:name, role:role, shift:shift, type:type, notes:notes});
-    document.getElementById('assignName').value='';
-    document.getElementById('assignNotes').value='';
-    document.getElementById('chargeDate').value = date;
-    save(); renderAll(); msg('Board assignment added.');
-  }
-  function clearBoardForDate(){
-    var d = dateValue();
-    if(!confirm('Clear board assignments for ' + d + '?')) return;
-    state.assignments = state.assignments.filter(function(a){ return a.date !== d; });
-    Object.keys(state.charge).forEach(function(k){ if(k.indexOf(d + '|') === 0) delete state.charge[k]; });
-    save(); renderAll(); msg('Date cleared.');
-  }
-  function removeAssignment(assignId){ state.assignments = state.assignments.filter(function(a){ return a.id !== assignId; }); save(); renderAll(); }
-  function addStaff(){
-    var name = normalizeName(document.getElementById('staffName').value);
-    if(!name){ alert('Enter a staff name.'); return; }
-    var existing = state.staff.find(function(s){ return s.name.toLowerCase() === name.toLowerCase(); });
-    var row = existing || {id:id()};
-    row.name = name;
-    row.role = document.getElementById('staffRole').value;
-    row.shift = document.getElementById('staffShift').value;
-    row.fte = document.getElementById('staffFte').value.trim();
-    row.phone = document.getElementById('staffPhone').value.trim();
-    row.email = document.getElementById('staffEmail').value.trim();
-    row.notes = document.getElementById('staffNotes').value.trim();
-    if(!existing) state.staff.push(row);
-    save(); clearStaffForm(); renderAll(); msg('Staff saved.');
-  }
-  function editStaff(staffId){
-    var s = state.staff.find(function(x){ return x.id === staffId; });
-    if(!s) return;
-    showTab('directory');
-    document.getElementById('staffName').value=s.name;
-    document.getElementById('staffRole').value=s.role || 'RN';
-    document.getElementById('staffShift').value=s.shift || 'Variable';
-    document.getElementById('staffFte').value=s.fte || '';
-    document.getElementById('staffPhone').value=s.phone || '';
-    document.getElementById('staffEmail').value=s.email || '';
-    document.getElementById('staffNotes').value=s.notes || '';
-  }
-  function deleteStaff(staffId){
-    var s = state.staff.find(function(x){ return x.id === staffId; });
-    if(!s || !confirm('Delete ' + s.name + ' from directory?')) return;
-    state.staff = state.staff.filter(function(x){ return x.id !== staffId; });
-    save(); renderAll();
-  }
-  function clearStaffForm(){ ['staffName','staffFte','staffPhone','staffEmail','staffNotes'].forEach(function(i){ document.getElementById(i).value=''; }); document.getElementById('staffRole').value='RN'; document.getElementById('staffShift').value='Day'; }
-  function setCharge(shift, name){ var d = document.getElementById('chargeDate').value || dateValue(); state.charge[d + '|' + shift] = name; save(); renderAll(); msg('Charge assignment saved.'); }
-  function importPastedRows(){
-    var text = document.getElementById('pasteRows').value.trim();
-    if(!text){ alert('Paste rows first.'); return; }
-    var count = 0;
-    text.split(/\n+/).forEach(function(line){
-      var parts = line.split(/\t|,/).map(function(p){ return p.trim(); }).filter(Boolean);
-      if(parts.length < 3) return;
-      var date = /^\d{4}-\d{2}-\d{2}$/.test(parts[0]) ? parts.shift() : dateValue();
-      var name = parts[0];
-      var role = (parts[1] || 'RN').toUpperCase();
-      var shift = parts[2] || '0700-1500';
-      if(shifts.indexOf(shift) < 0) shift = shifts.find(function(s){ return line.indexOf(s) >= 0; }) || '0700-1500';
-      if(roles.indexOf(role) < 0) role = 'RN';
-      upsertStaff(name, role);
-      state.assignments.push({id:id(), date:date, name:normalizeName(name), role:role, shift:shift, type:'Staff', notes:''});
-      count++;
-    });
-    save(); renderAll(); msg('Imported ' + count + ' rows.');
-  }
-  function downloadBackup(){ var blob = new Blob([JSON.stringify(cleanState(state), null, 2)], {type:'application/json'}); var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '4B_Command_Center_Backup_' + today() + '.json'; a.click(); URL.revokeObjectURL(a.href); }
-  function restoreBackup(event){
-    var file = event.target.files[0];
-    if(!file) return;
-    var reader = new FileReader();
-    reader.onload = function(e){ try { state = cleanState(JSON.parse(e.target.result)); save(); renderAll(); msg('Backup restored.'); } catch(err){ alert('Could not read backup file.'); } };
-    reader.readAsText(file);
-    event.target.value = '';
-  }
-  function clearAllData(){ if(!confirm('Clear all 4B Command Center data saved in this browser and Supabase?')) return; state = {staff:[], assignments:[], charge:{}}; save(); renderAll(); msg('All data cleared.'); }
-  function exportStaffingCsv(){
-    var lines = ['Date,Shift,Role,Name,Assignment,Notes,Charge'];
-    state.assignments.forEach(function(a){ var charge = state.charge[a.date + '|' + a.shift] === a.name ? 'YES' : ''; lines.push([a.date,a.shift,a.role,a.name,a.type,a.notes,charge].map(csv).join(',')); });
-    var blob = new Blob([lines.join('\n')], {type:'text/csv'});
-    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '4B_Staffing_' + today() + '.csv'; a.click(); URL.revokeObjectURL(a.href);
-  }
-  function csv(v){ return '"' + String(v == null ? '' : v).replace(/"/g,'""') + '"'; }
-  function renderAll(){ renderDatalists(); renderBoard(); renderCharge(); renderDirectory(); renderTools(); }
-  function renderDatalists(){ document.getElementById('staffNames').innerHTML = state.staff.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(s){ return '<option value="' + esc(s.name) + '">'; }).join(''); }
-  function renderBoard(){
-    var d = dateValue();
-    var roleFilter = document.getElementById('boardRoleFilter').value;
-    var shiftFilter = document.getElementById('boardShiftFilter').value;
-    document.getElementById('chargeDate').value = document.getElementById('chargeDate').value || d;
-    document.getElementById('boardSubtitle').textContent = 'Compact live view by shift and role';
-    document.getElementById('boardDatePill').textContent = d;
-    var dateRows = state.assignments.filter(function(a){ return a.date === d; });
-    var metrics = {RN:0,LPN:0,CA:0,UC:0};
-    dateRows.forEach(function(a){ if(metrics[a.role] != null) metrics[a.role]++; });
-    document.getElementById('boardMetrics').innerHTML = roles.map(function(k){ return '<div class="metric"><strong>' + metrics[k] + '</strong><span>' + k + '</span></div>'; }).join('') + '<div class="metric"><strong>' + dateRows.length + '</strong><span>Total</span></div>';
-    var rows = dateRows.filter(function(a){ return !roleFilter || a.role === roleFilter; });
-    var visibleShifts = shiftFilter ? [shiftFilter] : shifts;
-    document.getElementById('boardView').innerHTML = visibleShifts.map(function(shift){
-      var placed = rows.filter(function(a){ return a.shift === shift; }).sort(function(a,b){ return a.role.localeCompare(b.role) || a.name.localeCompare(b.name); });
-      var body = placed.length ? placed.map(function(a){ return staffChip(a, shift, d); }).join('') : '<div class="empty-staff">No staff assigned</div>';
-      return '<div class="shift-card"><div class="shift-head"><span>' + esc(shift) + '</span><span class="count-badge">' + placed.length + '</span></div><div class="staff-list">' + body + '</div></div>';
-    }).join('');
-  }
-  function staffChip(a, shift, date){
-    var isCharge = state.charge[date + '|' + shift] === a.name;
-    var pills = '<span class="pill role-' + className(a.role) + '">' + esc(a.role) + '</span><span class="pill time">' + esc(shift) + '</span>';
-    if(a.type && a.type !== 'Staff') pills += '<span class="pill ' + className(a.type) + '">' + esc(a.type) + '</span>';
-    if(isCharge) pills += '<span class="pill charge">Charge</span>';
-    if(a.notes) pills += '<span class="pill note">' + esc(a.notes) + '</span>';
-    return '<div class="staff-chip"><div><div class="staff-name">' + esc(a.name) + '</div><div class="pills">' + pills + '</div></div><button class="remove-dot no-print" onclick="removeAssignment(\'' + js(a.id) + '\')">x</button></div>';
-  }
-  function renderCharge(){
-    var d = document.getElementById('chargeDate').value || dateValue();
-    document.getElementById('chargeDate').value = d;
-    document.getElementById('chargeView').innerHTML = ['0700-1500','1500-1900','1900-0700'].map(function(shift){
-      var assigned = state.assignments.filter(function(a){ return a.date === d && a.shift === shift && (a.role === 'RN' || a.role === 'LPN'); });
-      var value = state.charge[d + '|' + shift] || '';
-      var options = '<option value="">Select charge</option>' + assigned.map(function(a){ return '<option ' + (a.name === value ? 'selected' : '') + ' value="' + esc(a.name) + '">' + esc(a.name) + ' (' + esc(a.role) + ')</option>'; }).join('');
-      return '<div class="shift-card"><div class="shift-head"><span>' + shift + '</span><span>4B Charge</span></div><div style="padding:10px"><select onchange="setCharge(\'' + shift + '\', this.value)">' + options + '</select></div></div>';
-    }).join('');
-  }
-  function renderDirectory(){
-    var q = String(document.getElementById('directorySearch') ? document.getElementById('directorySearch').value : '').toLowerCase();
-    var rows = state.staff.filter(function(s){ return !q || JSON.stringify(s).toLowerCase().indexOf(q) >= 0; }).sort(function(a,b){ return a.name.localeCompare(b.name); });
-    document.getElementById('directoryRows').innerHTML = rows.map(function(s){
-      var contact = (s.phone ? esc(s.phone) + '<br>' : '') + (s.email ? esc(s.email) : '');
-      return '<tr><td><strong>' + esc(s.name) + '</strong></td><td><span class="pill role-' + className(s.role) + '">' + esc(s.role || '') + '</span></td><td>' + esc(s.shift || '') + '<br><span class="muted">FTE ' + esc(s.fte || '') + '</span></td><td>' + contact + '</td><td>' + esc(s.notes || '') + '</td><td class="no-print"><button class="small secondary" onclick="editStaff(\'' + js(s.id) + '\')">Edit</button> <button class="small danger" onclick="deleteStaff(\'' + js(s.id) + '\')">Delete</button></td></tr>';
-    }).join('') || '<tr><td colspan="6" class="muted">No staff in the directory yet.</td></tr>';
-  }
-  function renderTools(){ document.getElementById('toolMetrics').innerHTML = '<div class="metric"><strong>' + state.staff.length + '</strong><span>Staff</span></div><div class="metric"><strong>' + state.assignments.length + '</strong><span>Board Rows</span></div><div class="metric"><strong>' + Object.keys(state.charge).filter(function(k){return state.charge[k];}).length + '</strong><span>Charge</span></div><div class="metric"><strong>' + new Set(state.assignments.map(function(a){return a.date;})).size + '</strong><span>Dates</span></div>'; }
-  function fillShiftSelect(){
-    var shiftOptions = shifts.map(function(s){ return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join('');
-    document.getElementById('assignShift').innerHTML = shiftOptions;
-    document.getElementById('boardShiftFilter').innerHTML = '<option value="">All Shifts</option>' + shiftOptions;
-  }
-
-  window.showTab = showTab;
-  window.saveNow = saveNow;
-  window.syncNow = syncNow;
-  window.addAssignment = addAssignment;
-  window.clearBoardForDate = clearBoardForDate;
-  window.removeAssignment = removeAssignment;
-  window.addStaff = addStaff;
-  window.editStaff = editStaff;
-  window.deleteStaff = deleteStaff;
-  window.clearStaffForm = clearStaffForm;
-  window.setCharge = setCharge;
-  window.importPastedRows = importPastedRows;
-  window.downloadBackup = downloadBackup;
-  window.restoreBackup = restoreBackup;
-  window.clearAllData = clearAllData;
-  window.exportStaffingCsv = exportStaffingCsv;
-  window.renderAll = renderAll;
-  window.renderBoard = renderBoard;
-  window.renderCharge = renderCharge;
-  window.renderDirectory = renderDirectory;
-
-  document.getElementById('viewDate').value = today();
-  document.getElementById('chargeDate').value = today();
-  fillShiftSelect();
-  renderAll();
-  loadFromSupabase();
+'use strict';
+var KEY = 'aomc-4b-command-center-v2-original';
+var SUPABASE_URL = 'https://xnsdvdfceflmagfhpycw.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_X3VPp9di5Ve-fw_uJJTUyQ_Ztzi6mds';
+var SUPABASE_STATE_KEY = '4b_command_center_state';
+var roles = ['RN','LPN','CA','UC'];
+var shifts = ['0700-1500','1500-1900','1900-0700','0630-1430','1430-1830','1830-2230','2230-0630','1500-2300','2300-0700'];
+var sections = [{label:'Unit Clerk', role:'UC', shifts:['0700-1500','1500-2300','2300-0700']},{label:'RN', role:'RN', shifts:['0700-1500','1500-1900','1900-0700']},{label:'LPN', role:'LPN', shifts:['0700-1500','1500-1900','1900-0700']},{label:'Clinical Assistant', role:'CA', shifts:['0630-1430','1430-1830','1830-2230','2230-0630']}];
+var state = load();
+var saveTimer = null;
+var dirRole = 'ALL';
+var isCloudLoading = false;
+function today(){ var d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+function id(){ return Date.now().toString(36)+Math.random().toString(36).slice(2); }
+function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(c){ if(c==='&') return '&amp;'; if(c==='<') return '&lt;'; if(c==='>') return '&gt;'; if(c==='"') return '&quot;'; return '&#39;'; }); }
+function js(v){ return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function clean(input){ input=input||{}; return {staff:Array.isArray(input.staff)?input.staff:[], assignments:Array.isArray(input.assignments)?input.assignments:[], charge:input.charge&&typeof input.charge==='object'&&!Array.isArray(input.charge)?input.charge:{}, census:input.census&&typeof input.census==='object'?input.census:{day:0,eve:0,night:0}}; }
+function hasData(input){ input=clean(input); return input.staff.length||input.assignments.length||Object.keys(input.charge).length; }
+function load(){ try { return clean(JSON.parse(localStorage.getItem(KEY)||'{}')); } catch(e){ return clean(); } }
+function saveLocal(){ localStorage.setItem(KEY, JSON.stringify(clean(state))); }
+function save(){ saveLocal(); if(!isCloudLoading) scheduleCloudSave(); }
+function setStatus(text, mode){ var el=document.getElementById('cloudStatus'); if(el){ el.textContent=text; el.className=mode||''; } var t=document.getElementById('tools-sync-status'); if(t) t.textContent=text; }
+function msg(text){ setStatus(text,'ok'); }
+function dateValue(){ return document.getElementById('view-date').value || today(); }
+function normalizeName(name){ return String(name||'').replace(/\s+/g,' ').trim(); }
+function findStaff(name){ return state.staff.find(function(s){ return s.name.toLowerCase()===String(name||'').toLowerCase(); }); }
+function upsertStaff(name, role){ name=normalizeName(name); if(!name) return null; var row=findStaff(name); if(row){ if(role && !row.role) row.role=role; return row; } row={id:id(), name:name, role:role||'RN', shift:'Variable', fte:'', phone:'', email:'', birthday:'', hireDate:'', hr48:false, orient:false, charge:false, dblmat:false, agency:false, notes:''}; state.staff.push(row); return row; }
+function supabaseRequest(path, options){ options=options||{}; var headers=Object.assign({apikey:SUPABASE_KEY, Authorization:'Bearer '+SUPABASE_KEY}, options.headers||{}); return fetch(SUPABASE_URL+path, Object.assign({}, options, {headers:headers})).then(function(res){ return res.text().then(function(text){ var data=null; if(text){ try{data=JSON.parse(text);}catch(e){data=text;} } if(!res.ok) throw new Error((data&&data.message)||text||res.statusText); return data; }); }); }
+async function loadFromSupabase(){ if(!window.fetch){ setStatus('Supabase unavailable','bad'); return; } setStatus('Supabase syncing','busy'); try { var rows=await supabaseRequest('/rest/v1/tracker_state?select=value,updated_at,updated_by&key=eq.'+encodeURIComponent(SUPABASE_STATE_KEY), {headers:{Accept:'application/json'}}); var localHas=hasData(state); if(rows&&rows[0]&&rows[0].value){ var cloud=typeof rows[0].value==='string'?JSON.parse(rows[0].value):rows[0].value; if(cloud && (cloud.staff || cloud.assignments || cloud.charge)){ cloud=clean(cloud); if(hasData(cloud)||!localHas){ state=cloud; isCloudLoading=true; saveLocal(); isCloudLoading=false; applyCensus(); renderAll(); setStatus('Supabase synced','ok'); return; } } } await saveToSupabase(false); } catch(e){ console.warn(e); setStatus('Supabase offline','bad'); } }
+async function saveToSupabase(show){ if(!window.fetch){ setStatus('Supabase unavailable','bad'); return; } setStatus('Saving to Supabase','busy'); try { await supabaseRequest('/rest/v1/tracker_state?on_conflict=key',{method:'POST',headers:{'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({key:SUPABASE_STATE_KEY,value:JSON.stringify(clean(state)),updated_by:'4b-command-center',updated_at:new Date().toISOString()})}); setStatus('Supabase saved','ok'); if(show) alert('Saved to Supabase.'); } catch(e){ console.warn(e); setStatus('Supabase save failed','bad'); if(show) alert('Saved locally. Supabase did not update.'); } }
+function scheduleCloudSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(function(){ saveToSupabase(false); },700); }
+function switchTab(el){ document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');}); document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');}); el.classList.add('active'); document.getElementById('panel-'+el.dataset.panel).classList.add('active'); renderAll(); }
+function updateClock(){ document.getElementById('live-clock').textContent=new Date().toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
+function updateRatios(){ state.census={day:+document.getElementById('census-day').value||0,eve:+document.getElementById('census-eve').value||0,night:+document.getElementById('census-night').value||0}; var d=dateValue(); var rows=state.assignments.filter(function(a){return a.date===d;}); function count(role, shiftList){ return rows.filter(function(a){return a.role===role && shiftList.indexOf(a.shift)>=0;}).length; } var dayRN=count('RN',['0700-1500']); var eveRN=count('RN',['1500-1900']); var nightRN=count('RN',['1900-0700']); var html='<span class="ratio-chip">Day RN '+dayRN+' / Census '+state.census.day+'</span><span class="ratio-chip">Eve RN '+eveRN+' / Census '+state.census.eve+'</span><span class="ratio-chip">Night RN '+nightRN+' / Census '+state.census.night+'</span>'; document.getElementById('ratio-display').innerHTML=html; saveLocal(); }
+function applyCensus(){ document.getElementById('census-day').value=state.census.day||0; document.getElementById('census-eve').value=state.census.eve||0; document.getElementById('census-night').value=state.census.night||0; }
+function renderAll(){ renderDate(); renderDatalist(); renderBoard(); renderCharge(); renderDirectory(); updateRatios(); }
+function renderDate(){ var d=dateValue(); document.getElementById('view-date').value=d; var label=new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'numeric',day:'numeric'}); document.getElementById('active-date-label').textContent=label; }
+function renderDatalist(){ document.getElementById('staff-datalist').innerHTML=state.staff.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(s){return '<option value="'+esc(s.name)+'">';}).join(''); }
+function renderBoard(){ var d=dateValue(); var rows=state.assignments.filter(function(a){return a.date===d;}); var html=''; sections.forEach(function(sec){ html+='<div style="margin-bottom:18px;"><div style="font-size:12px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);">'+esc(sec.label)+'</div><div class="shift-grid">'; sec.shifts.forEach(function(shift){ var placed=rows.filter(function(a){return a.role===sec.role && a.shift===shift;}); html+='<div class="shift-block"><div class="shift-block-header"><span class="shift-time">'+esc(shift)+'</span><span class="shift-count">'+placed.length+'</span></div><div class="shift-body">'; if(!placed.length){ html+='<div class="empty-shift">No staff</div>'; } else { placed.forEach(function(a){ var isCharge=state.charge[d+'|'+shift]===a.name; html+='<div class="staff-row"><div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;"><span class="staff-name">'+esc(a.name)+'</span>'+(isCharge?'<span class="charge-badge">4B CHARGE</span>':'')+(a.type&&a.type!=='Staff'?'<span class="detail-badge">'+esc(a.type)+'</span>':'')+'</div><div class="staff-actions"><button class="move-btn remove-btn" onclick="removeAssignment(\''+js(a.id)+'\')">x</button></div></div>'; }); } html+='</div></div>'; }); html+='</div></div>'; }); document.getElementById('board-view').innerHTML=html; }
+function addStaffManual(){ var name=normalizeName(document.getElementById('add-name').value); var role=document.getElementById('add-role').value; var shift=document.getElementById('add-shift').value; var type=document.getElementById('add-type').value; if(!name){ alert('Enter a staff name.'); return; } upsertStaff(name,role); state.assignments.push({id:id(),date:dateValue(),name:name,role:role,shift:shift,type:type,notes:''}); document.getElementById('add-name').value=''; save(); renderAll(); }
+function removeAssignment(assignId){ state.assignments=state.assignments.filter(function(a){return a.id!==assignId;}); save(); renderAll(); }
+function renderCharge(){ var d=dateValue(); var cont=document.getElementById('charge-assignments'); var html='<div style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);">Charge Nurse Assignments</div>'; ['0700-1500','1500-1900','1900-0700'].forEach(function(shift){ var staff=state.assignments.filter(function(a){return a.date===d && a.shift===shift && (a.role==='RN'||a.role==='LPN');}); var current=state.charge[d+'|'+shift]||''; html+='<div class="charge-row"><div class="charge-shift-label">'+shift+'</div><div><select class="charge-select" onchange="setCharge(\''+shift+'\',this.value)"><option value="">Select 4B Charge</option>'+staff.map(function(s){return '<option value="'+esc(s.name)+'" '+(s.name===current?'selected':'')+'>'+esc(s.name)+' ('+esc(s.role)+')</option>';}).join('')+'</select>'+(current?'<span class="charge-indicator">'+esc(current)+'</span>':'')+'</div></div>'; }); cont.innerHTML=html; }
+function setCharge(shift,name){ state.charge[dateValue()+'|'+shift]=name; save(); renderAll(); }
+function setDirTab(el){ document.querySelectorAll('.dir-subtab').forEach(function(t){t.classList.remove('active');}); el.classList.add('active'); dirRole=el.dataset.role; renderDirectory(); }
+function addEmployee(){ var name=normalizeName(document.getElementById('new-emp-name').value); var role=document.getElementById('new-emp-role').value; if(!name){ alert('Enter a name.'); return; } upsertStaff(name,role); document.getElementById('new-emp-name').value=''; save(); renderAll(); }
+function renameStaff(){ var cur=normalizeName(document.getElementById('rename-current').value); var next=normalizeName(document.getElementById('rename-new').value); if(!cur||!next){ alert('Enter current and new name.'); return; } var s=findStaff(cur); if(s) s.name=next; state.assignments.forEach(function(a){ if(a.name.toLowerCase()===cur.toLowerCase()) a.name=next; }); Object.keys(state.charge).forEach(function(k){ if(String(state.charge[k]).toLowerCase()===cur.toLowerCase()) state.charge[k]=next; }); document.getElementById('rename-current').value=''; document.getElementById('rename-new').value=''; save(); renderAll(); }
+function saveStaffField(id,field,value,checked){ var s=state.staff.find(function(x){return x.id===id;}); if(!s) return; s[field]=checked==null?value:checked; save(); renderDirectory(); }
+function deleteStaff(id){ var s=state.staff.find(function(x){return x.id===id;}); if(!s||!confirm('Delete '+s.name+' from directory?')) return; state.staff=state.staff.filter(function(x){return x.id!==id;}); save(); renderAll(); }
+function renderDirectory(){ var q=String(document.getElementById('dir-search')?document.getElementById('dir-search').value:'').toLowerCase(); var rows=state.staff.filter(function(s){return (dirRole==='ALL'||s.role===dirRole) && (!q||JSON.stringify(s).toLowerCase().indexOf(q)>=0);}).sort(function(a,b){return a.name.localeCompare(b.name);}); document.getElementById('dir-tbody').innerHTML=rows.map(function(s){ var cls=s.role==='RN'?'tag-rn':s.role==='LPN'?'tag-lpn':s.role==='CA'?'tag-ca':'tag-uc'; return '<tr><td><strong>'+esc(s.name)+'</strong></td><td><span class="tag '+cls+'">'+esc(s.role||'')+'</span></td><td><select class="inline-select" onchange="saveStaffField(\''+js(s.id)+'\',\'shift\',this.value)"><option '+((s.shift||'Variable')==='Day'?'selected':'')+'>Day</option><option '+(s.shift==='Evening'?'selected':'')+'>Evening</option><option '+(s.shift==='Night'?'selected':'')+'>Night</option><option '+((s.shift||'Variable')==='Variable'?'selected':'')+'>Variable</option></select></td><td><input class="inline-input" value="'+esc(s.fte||'')+'" onblur="saveStaffField(\''+js(s.id)+'\',\'fte\',this.value)"></td><td class="check-cell"><input type="checkbox" '+(s.hr48?'checked':'')+' onchange="saveStaffField(\''+js(s.id)+'\',\'hr48\',null,this.checked)"></td><td class="check-cell"><input type="checkbox" '+(s.orient?'checked':'')+' onchange="saveStaffField(\''+js(s.id)+'\',\'orient\',null,this.checked)"></td><td class="check-cell"><input type="checkbox" '+(s.charge?'checked':'')+' onchange="saveStaffField(\''+js(s.id)+'\',\'charge\',null,this.checked)"></td><td class="check-cell"><input type="checkbox" '+(s.dblmat?'checked':'')+' onchange="saveStaffField(\''+js(s.id)+'\',\'dblmat\',null,this.checked)"></td><td class="check-cell"><input type="checkbox" '+(s.agency?'checked':'')+' onchange="saveStaffField(\''+js(s.id)+'\',\'agency\',null,this.checked)"></td><td><input class="inline-input" value="'+esc(s.birthday||'')+'" onblur="saveStaffField(\''+js(s.id)+'\',\'birthday\',this.value)"></td><td><input class="inline-input" value="'+esc(s.hireDate||'')+'" onblur="saveStaffField(\''+js(s.id)+'\',\'hireDate\',this.value)"></td><td><input class="inline-input" value="'+esc(s.phone||'')+'" onblur="saveStaffField(\''+js(s.id)+'\',\'phone\',this.value)"></td><td><input class="inline-input" value="'+esc(s.email||'')+'" onblur="saveStaffField(\''+js(s.id)+'\',\'email\',this.value)"></td><td><button class="btn btn-danger btn-sm" onclick="deleteStaff(\''+js(s.id)+'\')">x</button></td></tr>'; }).join('') || '<tr><td colspan="14" style="text-align:center;color:var(--text3);padding:20px;">No staff in directory.</td></tr>'; }
+function parsePastedData(){ var text=document.getElementById('paste-area').value.trim(); if(!text){ alert('Paste UKG rows first.'); return; } var count=0; text.split(/\n+/).forEach(function(line){ var parts=line.split(/\t|,/).map(function(p){return p.trim();}).filter(Boolean); if(parts.length<3) return; var date=/^\d{4}-\d{2}-\d{2}$/.test(parts[0])?parts.shift():dateValue(); var name=parts[0]; var role=(parts[1]||'RN').toUpperCase(); var shift=parts[2]||'0700-1500'; if(shifts.indexOf(shift)<0) shift=shifts.find(function(s){return line.indexOf(s)>=0;})||'0700-1500'; if(roles.indexOf(role)<0) role='RN'; upsertStaff(name,role); state.assignments.push({id:id(),date:date,name:normalizeName(name),role:role,shift:shift,type:'Staff',notes:''}); count++; }); save(); renderAll(); alert('Imported '+count+' rows.'); }
+function exportCSV(){ var lines=['Date,Shift,Role,Name,Tag,Charge']; state.assignments.forEach(function(a){ var charge=state.charge[a.date+'|'+a.shift]===a.name?'YES':''; lines.push([a.date,a.shift,a.role,a.name,a.type,charge].map(csv).join(',')); }); download('4B_Staffing_'+today()+'.csv', lines.join('\n'), 'text/csv'); }
+function csv(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
+function downloadBackup(){ download('4B_Command_Center_Backup_'+today()+'.json', JSON.stringify(clean(state),null,2), 'application/json'); }
+function restoreBackup(event){ var f=event.target.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(e){ try{ state=clean(JSON.parse(e.target.result)); save(); applyCensus(); renderAll(); alert('Backup restored.'); }catch(err){ alert('Could not read backup.'); } }; r.readAsText(f); event.target.value=''; }
+function clearAllData(){ if(!confirm('Clear all 4B Command Center data in this browser and Supabase?')) return; state=clean(); save(); renderAll(); }
+function download(name, content, type){ var blob=new Blob([content],{type:type}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
+async function saveNow(){ saveLocal(); await saveToSupabase(true); }
+async function syncNow(){ await loadFromSupabase(); }
+function fillShiftSelect(){ document.getElementById('add-shift').innerHTML=shifts.map(function(s){return '<option>'+s+'</option>';}).join(''); }
+window.switchTab=switchTab; window.updateRatios=updateRatios; window.addStaffManual=addStaffManual; window.removeAssignment=removeAssignment; window.setCharge=setCharge; window.setDirTab=setDirTab; window.addEmployee=addEmployee; window.renameStaff=renameStaff; window.saveStaffField=saveStaffField; window.deleteStaff=deleteStaff; window.renderDirectory=renderDirectory; window.parsePastedData=parsePastedData; window.exportCSV=exportCSV; window.downloadBackup=downloadBackup; window.restoreBackup=restoreBackup; window.clearAllData=clearAllData; window.saveNow=saveNow; window.syncNow=syncNow; window.renderAll=renderAll;
+document.getElementById('view-date').value=today(); fillShiftSelect(); applyCensus(); renderAll(); updateClock(); setInterval(updateClock,30000); loadFromSupabase();
 })();
 </script>
 </body>
